@@ -1,0 +1,37 @@
+﻿@model PatientInfo
+@{
+    var admissions = ViewBag.Admissions as List<Admission>;
+}
+<h3>Thông tin người bệnh</h3>
+<ul>
+    <li>Mã BN: @Model.PatientCode</li>
+    <li>Họ tên: @Model.FullName</li>
+    <li>Ngày sinh: @Model.DateOfBirth.ToString("dd/MM/yyyy")</li>
+    <li>Giới tính: @Model.Gender</li>
+</ul>
+
+<h4>Danh sách nhập khoa</h4>
+<table class="table">
+    <thead>
+        <tr><th>Khoa</th><th>Ngày nhập</th><th>Lý do</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var a in admissions)
+        {
+            <tr>
+                <td>@a.DepartmentName</td>
+                <td>@a.AdmissionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@a.Reason</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Nhập khoa mới</h4>
+<form asp-action="AddAdmission" method="post">
+    <input type="hidden" name="patientId" value="@Model.Id" />
+    <input type="text" name="DepartmentName" placeholder="Tên khoa" class="form-control" />
+    <input type="text" name="Reason" placeholder="Lý do" class="form-control mt-2" />
+    <input type="datetime-local" name="AdmissionDate" class="form-control mt-2" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+    <button type="submit" class="btn btn-success mt-2">Nhập khoa</button>
+</form>

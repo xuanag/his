@@ -1,0 +1,59 @@
+﻿@model List<PatientInfo>
+@{
+    ViewData["Title"] = "Danh sách người bệnh";
+}
+
+<main class="main users chart-page" id="skip-target">
+    <div class="container">
+        <h2 class="main-title">Danh sách người bệnh</h2>
+
+        <form method="get">
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm..." class="form-control" />
+        </form>
+
+        <div class="users-table table-wrapper">
+            <table class="posts-table">
+                <thead>
+                    <tr class="users-table-info">
+                        <th>
+                            <label class="users-table__checkbox ms-20">
+                                <input type="checkbox" class="check-all">Hình
+                            </label>
+                        </th>
+                        <th>Mã BN</th>
+                        <th>Họ tên</th>
+                        <th>Giới tính</th>
+                        <th>Ngày sinh</th>
+                        <th>Chức năng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr class="">
+                            <td>
+                                <label class="users-table__checkbox">
+                                    <input type="checkbox" class="check">
+                                    <div class="categories-table-img">
+                                        <picture><source srcset="~/lib/elegant/img/categories/01.webp" type="image/webp"><img src="~/lib/elegant/img/categories/01.jpg" alt="category"></picture>
+                                    </div>
+                                </label>
+                            </td>
+                            <td>
+                                @p.PatientCode
+                            </td>
+                            <td>
+                                @p.FullName
+                            </td>
+                            <td>@p.Gender</td>
+                            <td>@p.DateOfBirth.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-info">>> Nhập khoa</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>

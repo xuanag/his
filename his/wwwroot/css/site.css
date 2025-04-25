@@ -1,0 +1,82 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.sidebar {
+    min-height: 100vh;
+    background-color: #007bff;
+    color: white;
+}
+
+    .sidebar a {
+        color: white;
+        padding: 12px 20px;
+        display: block;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+
+    .sidebar i {
+        margin-right: 8px;
+    }
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.content {
+    padding: 20px;
+}
+
+footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #999;
+    font-size: 0.9em;
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        position: absolute;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        transition: left 0.3s ease;
+    }
+
+        .sidebar.show {
+            left: 0;
+        }
+
+        .sidebar a {
+            font-size: 14px;
+        }
+}

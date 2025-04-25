@@ -1,0 +1,86 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Tổng quan";
+}
+
+<div class="container">
+    <h3 class="mb-4">Dashboard Thống Kê Y Tế</h3>
+
+    <!-- Số lượng người bệnh -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Số lượng người bệnh</h5>
+                    <canvas id="patientsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Số lượng nhập khoa</h5>
+                    <canvas id="admissionsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Báo cáo y tế</h5>
+                    <canvas id="reportsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Biểu đồ Số lượng người bệnh
+    var ctx1 = document.getElementById('patientsChart').getContext('2d');
+    var patientsChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: ['Ngày 1', 'Ngày 2', 'Ngày 3'],
+            datasets: [{
+                label: 'Số lượng người bệnh',
+                data: [50, 60, 70],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+
+    // Biểu đồ Số lượng nhập khoa
+    var ctx2 = document.getElementById('admissionsChart').getContext('2d');
+    var admissionsChart = new Chart(ctx2, {
+        type: 'pie',
+        data: {
+            labels: ['Khoa 1', 'Khoa 2', 'Khoa 3'],
+            datasets: [{
+                label: 'Số lượng nhập khoa',
+                data: [30, 45, 25],
+                backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(75, 192, 192, 0.2)'],
+                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 159, 64, 1)', 'rgba(75, 192, 192, 1)'],
+                borderWidth: 1
+            }]
+        }
+    });
+
+    // Biểu đồ Báo cáo y tế
+    var ctx3 = document.getElementById('reportsChart').getContext('2d');
+    var reportsChart = new Chart(ctx3, {
+        type: 'line',
+        data: {
+            labels: ['Tháng 1', 'Tháng 2', 'Tháng 3'],
+            datasets: [{
+                label: 'Báo cáo y tế',
+                data: [120, 150, 180],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
