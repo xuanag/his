@@ -1,11 +1,29 @@
-﻿@model List<PatientInfo>
+﻿@using his.ViewModel;
+@model PatientViewModel;
 @{
     ViewData["Title"] = "Danh sách người bệnh";
+    var date = DateTime.Now.AddYears(-10).ToString("yyyy-MM-dd");
+    var admissionDate = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+    var patients = Model.Patients;
+    var departments = Model.Departments;
+    var emrTypes = Model.EmrTypes;
 }
 
 <main class="main users chart-page" id="skip-target">
     <div class="container">
-        <h2 class="main-title">Danh sách người bệnh</h2>
+        <!-- Breadcrumb -->
+        <ul class="breadcrumb">
+            <li><a href="/">Trang chủ</a></li>
+            <li><a href="/patients"> Người bệnh</a></li>
+            <li class="active"> Danh sách</li>
+        </ul>
+        <!-- Action -->
+        <div style="padding-top: 20px;padding-bottom: 20px;">
+            <button class="btn-open btn-danger" onclick="openModalTiepNhan()">➕ Nhập khoa</button>
+        </div>
+        <!-- LIST -->
+
+        <h2>Danh sách người bệnh</h2>
 
         <form method="get">
             <input type="text" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm..." class="form-control" />
@@ -17,38 +35,48 @@
                     <tr class="users-table-info">
                         <th>
                             <label class="users-table__checkbox ms-20">
-                                <input type="checkbox" class="check-all">Hình
+                                <input type="checkbox" class="check-all">Mã BN
                             </label>
                         </th>
-                        <th>Mã BN</th>
                         <th>Họ tên</th>
+                        <th>Ngày sinh</th>
+                        <th>Khoa phòng</th>
+                        <th>Mã nhập viện/BA</th>
+                        <th>Thời gian nhập khoa</th>
                         <th>Giới tính</th>
                         <th>Ngày sinh</th>
                         <th>Chức năng</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var p in Model)
+                    @foreach (var p in patients)
                     {
                         <tr class="">
                             <td>
                                 <label class="users-table__checkbox">
                                     <input type="checkbox" class="check">
-                                    <div class="categories-table-img">
-                                        <picture><source srcset="~/lib/elegant/img/categories/01.webp" type="image/webp"><img src="~/lib/elegant/img/categories/01.jpg" alt="category"></picture>
-                                    </div>
+                                    @p.PatientCode
                                 </label>
-                            </td>
-                            <td>
-                                @p.PatientCode
                             </td>
                             <td>
                                 @p.FullName
                             </td>
+                            <td>
+                                @p.DateOfBirth.ToString("yyyy-MM-dd HH:mm")
+                            </td>
+                            <td>
+                                @p.DepartmentName
+                            </td>
+                            <td>@p.AdmissionCode</td>
+                            <td>
+                                @p.AdmissionDate?.ToString("yyyy-MM-dd HH:mm")
+                            </td>
                             <td>@p.Gender</td>
                             <td>@p.DateOfBirth.ToString("dd/MM/yyyy")</td>
                             <td>
-                                <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-info">>> Nhập khoa</a>
+                                <button onclick="openModalXetNghiem()" class="btn">Xét nghiệm</button>
+                                <button onclick="openModalXetNghiem()" class="btn">CĐHA</button>
+                                <button onclick="openModalXetNghiem()" class="btn">Kê thuốc</button>
                             </td>
                         </tr>
                     }
@@ -57,3 +85,119 @@
         </div>
     </div>
 </main>
+
+<!-- Modal Nhap Khoa -->
+<div id="modalTiepNhan" class="modal-overlay">
+    <div class="modal">
+        <span class="close" onclick="closeModalTiepNhan()">&times;</span>
+        <h2>Thông tin nhập khoa</h2>
+        
+        <form action="/patients/create" method="post" id="patientForm">
+            <input type="hidden" name="DepartmentName" id="DepartmentName" value="" />
+            <input type="hidden" name="EmrTypeName" id="EmrTypeName" value="" />
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <label for="FullName">Họ tên</label>
+                    <input type="text" id="FullName" name="FullName" required />
+                </div>
+                <div class="col-6 col-md-3">
+                    <label for="Gender">Giới tính</label>
+                    <select id="Gender" name="Gender">
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label for="DateOfBirth">Ngày sinh</label>
+                    <input type="date" id="DateOfBirth" name="DateOfBirth" value="@date" />
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <label for="Phone">Điện thoại</label>
+                    <input type="text" id="Phone" name="Phone" />
+                </div>
+                <div class="col-12 col-md-3">
+                    <label for="cccd">CCCD</label>
+                    <input type="text" id="IdCardNo" name="IdCardNo">
+                </div>
+                <div class="col-12 col-md-3">
+                    <label for="IdCardDate">Ngày cấp CCCD</label>
+                    <input type="date" id="IdCardDate" name="IdCardDate">
+                </div>
+            </div>
+            <label for="Address">Địa chỉ</label>
+            <input type="text" id="Address" name="Address" />
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <label for="DepartmentCode">Khoa nhập viện</label>
+                    <select id="DepartmentCode" name="DepartmentCode">
+                        <option value="">-- Chọn khoa --</option>
+                        @foreach (var department in departments)
+                        {
+                            <option value="@department.Code">@department.Value</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label for="EmrTypeCode">Bệnh án</label>
+                    <select id="EmrTypeCode" name="EmrTypeCode">
+                        <option value="">-- Chọn bệnh án --</option>
+                        @foreach (var emr in emrTypes)
+                        {
+                            <option value="@emr.Code">@emr.Value</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label for="AdmissionDate">Ngày nhập viện</label>
+                    <input type="datetime-local" id="AdmissionDate" name="AdmissionDate" value="@admissionDate" />
+                </div>
+            </div>
+            <label for="ngayNhapVien">Lý do/Chẩn đoán</label>
+            <textarea id="Reason" name="Reason"></textarea>
+            <div class="actions">
+                <button type="button" class="btn-close" onclick="closeModalTiepNhan()"><i class="fa-solid fa-xmark"></i> Huỷ</button>
+                <button type="submit" class="btn-submit"><i class="fa-solid fa-download"></i> Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modalXetNghiem" class="modal-overlay">
+    <div class="modal">
+        <span class="close" onclick="closeModalXetNghiem()">&times;</span>
+        <h2>Chỉ Định Xét Nghiệm</h2>
+        
+        <form action="/patients/create" method="post" id="xetNghiemForm">
+            <label for="maBenhNhan">Thông tin người bệnh</label>
+            Tên người bệnh: <b>Nguyễn Văn A</b> Ngày sinh: <b>01/01/1990</b> Giới tính: <b>Nam</b><br />
+            Mã người bệnh: <b>BN001</b>
+            Mã nhập khoa: <b>BA001</b> Mã khoa: <b>KH001</b><br /> Ngày nhập khoa: <b>01/01/2023</b> Mã BA: <b>BA001</b><br />
+            Thông tin hành chính: <br />
+            CCCD: <b>123456789</b> Ngày cấp: <b>01/01/2023</b> Số điện thoại: <b>0123456789</b> Địa chỉ: <b>123 Đường ABC, TP.HCM</b><br />
+            <br>
+            <label for="xetNghiem">Chọn Xét Nghiệm:</label>
+            <select id="xetNghiem" name="DanhSachXetNghiem[]" multiple>
+                <option value="XN001">Huyết học</option>
+                <option value="XN002">Sinh hóa máu</option>
+                <option value="XN003">Nước tiểu</option>
+                <option value="XN004">Chức năng gan</option>
+                <option value="XN005">CRP định lượng</option>
+            </select>
+
+            <label for="ghiChu">Ghi chú:</label>
+            <textarea id="ghiChu" name="GhiChu" rows="2"></textarea>
+
+            <div class="actions">
+                <button type="button" class="btn-close" onclick="closeModalXetNghiem()"><i class="fa-solid fa-xmark"></i> Huỷ</button>
+                <button type="submit" class="btn-submit"><i class="fa-solid fa-download"></i> Lưu chỉ định</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/js/patient.js"></script>

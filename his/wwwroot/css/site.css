@@ -1,82 +1,208 @@
-html {
-  font-size: 14px;
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 8px 16px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    .breadcrumb li {
+        display: flex;
+        align-items: center;
+        color: #007bff;
+    }
+
+        .breadcrumb li + li:before {
+            content: "\f105"; /* Font Awesome "chevron-right" */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+        }
+
+        .breadcrumb li a {
+            text-decoration: none;
+            color: #007bff;
+            transition: color 0.2s;
+        }
+
+            .breadcrumb li a:hover {
+                color: #0056b3;
+                text-decoration: underline;
+            }
+
+    .breadcrumb .active {
+        color: #6c757d;
+        pointer-events: none;
+    }
+
+.form-container {
+    max-width: 700px;
+    margin: auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+h2 {
+    margin-bottom: 25px;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
 }
 
-body {
-  margin-bottom: 60px;
+input[type="text"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f8f9fa;
+textarea {
+    resize: vertical;
 }
 
-.sidebar {
-    min-height: 100vh;
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+    .form-row > div {
+        flex: 1;
+    }
+
+.actions {
+    text-align: right;
+}
+
+.btn {
+    padding: 10px 18px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-primary {
     background-color: #007bff;
     color: white;
 }
 
-    .sidebar a {
-        color: white;
-        padding: 12px 20px;
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    margin-left: 10px;
+}
+
+@media (max-width: 600px) {
+    .form-row {
+        flex-direction: column;
+    }
+}
+
+select {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}
+
+.btn-open {
+    padding: 10px 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Modal backdrop */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal content */
+.modal {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 960px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+    .modal h2 {
+        margin-top: 0;
+    }
+
+    .modal form {
+        margin-top: 15px;
+    }
+
+    .modal label {
         display: block;
-        text-decoration: none;
-        transition: background 0.2s;
+        margin-top: 12px;
+        font-weight: bold;
     }
 
-        .sidebar a:hover {
-            background-color: #0056b3;
-        }
-
-    .sidebar i {
-        margin-right: 8px;
+    .modal input, .modal select {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
     }
 
-.navbar-brand {
-    font-weight: bold;
-}
-
-.content {
-    padding: 20px;
-}
-
-footer {
-    margin-top: 40px;
-    text-align: center;
-    color: #999;
-    font-size: 0.9em;
-}
-
-@media (max-width: 992px) {
-    .sidebar {
-        position: absolute;
-        top: 0;
-        left: -250px;
-        width: 250px;
-        transition: left 0.3s ease;
+    .modal .actions {
+        margin-top: 20px;
+        text-align: right;
     }
 
-        .sidebar.show {
-            left: 0;
-        }
+    .modal .btn-close,
+    .modal .btn-submit {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-        .sidebar a {
-            font-size: 14px;
-        }
+    .modal .btn-submit {
+        background: #28a745;
+        color: white;
+    }
+
+    .modal .btn-close {
+        background: #6c757d;
+        color: white;
+        margin-right: 10px;
+    }
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
 }
+
+    .close:hover {
+        color: black;
+    }

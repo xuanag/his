@@ -2,8 +2,9 @@
 
 namespace his.Services
 {
-    public interface IPatientService: IMongoService<PatientInfo>
+    public interface IPatientService: IMongoService<Patient>
     {
-        Task<List<PatientInfo>> GetAllAsync(string keyword = "");
+        Task<List<Patient>> GetAllAsync(string keyword = "");
+        Task<string> GeneratePatientCodeAsync(string refix);
     }
 }
