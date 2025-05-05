@@ -40,8 +40,8 @@ namespace his.Controllers
         {
             await InitFirstData();
             var patients = await _patientService.GetAllAsync(search);
-            var departments = await _categoryService.CategoriesByType("department");
-            var emrTypes = await _categoryService.CategoriesByType("emrType");
+            var departments = await _categoryService.CategoriesByType(Constants.CategoryType.Department);
+            var emrTypes = await _categoryService.CategoriesByType(Constants.CategoryType.EmrType);
             var viewModel = new PatientViewModel()
             {
                 Patients = patients,
@@ -64,6 +64,19 @@ namespace his.Controllers
             if (!string.IsNullOrEmpty(patient.DepartmentCode))
                 patient.AdmissionCode = await _admissionSequenceService.GenerateAdmissionCodeAsync(patient.DepartmentCode);
 
+            if (string.IsNullOrEmpty(patient.EmrTypeCode))
+            {
+                var emrTypeCode = "BBO";
+                var departmentE = await _categoryService.CategoryByTypeAndCode(Constants.CategoryType.Department, patient.DepartmentCode);
+                if (departmentE != null && !string.IsNullOrEmpty(departmentE.InitAction))
+                {
+                    emrTypeCode = departmentE.InitAction;
+                }
+                var emrTypeE = await _categoryService.CategoryByTypeAndCode(Constants.CategoryType.EmrType, emrTypeCode);
+                patient.EmrTypeCode = emrTypeCode;
+                patient.EmrTypeName = emrTypeE.Value;
+            }
+                
             await _patientService.CreateAsync(patient);
 
             #region CALL EMR API
@@ -223,7 +236,7 @@ namespace his.Controllers
             #endregion
 
             #region Category
-            var type = "department";
+            var type = Constants.CategoryType.Department;
             var categoriesSt = new List<string>()
             {
                 "KB;Khoa Khám bệnh",
@@ -377,7 +390,7 @@ namespace his.Controllers
                 await _categoryService.CreateAsync(category);
             }
 
-            type = "emrType";
+            type = Constants.CategoryType.EmrType;
             var categoriesEmrType = new List<string>()
             {
                 "BBO;Bệnh án Bỏng",

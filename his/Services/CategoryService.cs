@@ -21,5 +21,10 @@ namespace his.Services
         {
             return _collection.Find(m => m.Type.Equals(type)).ToListAsync();
         }
+
+        public Task<Category> CategoryByTypeAndCode(string type, string code)
+        {
+            return _collection.Find(m => m.Type.Equals(type) && m.Code.Equals(code)).FirstOrDefaultAsync();
+        }
     }
 }

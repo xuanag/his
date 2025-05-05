@@ -40,5 +40,10 @@ namespace his.Services
 
             return code;
         }
+
+        public async Task<Patient> GetByNoAsync(string no = "")
+        {
+            return await _collection.Find(x =>x.PatientCode.Equals(no)).FirstOrDefaultAsync();
+        }
     }
 }

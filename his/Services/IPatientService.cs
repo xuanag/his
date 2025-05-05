@@ -6,5 +6,6 @@ namespace his.Services
     {
         Task<List<Patient>> GetAllAsync(string keyword = "");
         Task<string> GeneratePatientCodeAsync(string refix);
+        Task<Patient> GetByNoAsync(string no = "");
     }
 }

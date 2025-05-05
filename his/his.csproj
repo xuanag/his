@@ -239,6 +239,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" Version="35.6.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
     <PackageReference Include="MongoDB.Driver" Version="3.3.0" />
     <PackageReference Include="MongoDB.Driver.Core" Version="2.30.0" />
