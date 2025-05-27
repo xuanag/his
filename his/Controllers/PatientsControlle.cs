@@ -1,7 +1,9 @@
 ﻿using his.Helper;
 using his.Models;
+using his.Models.Dto;
 using his.Services;
 using his.ViewModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
@@ -51,8 +53,6 @@ namespace his.Controllers
             return View(viewModel);
         }
 
-        [HttpPost]
-        [Route("Patients/Create")]
         public async Task<IActionResult> Create([FromBody] Patient patient)
         {
             if (!ModelState.IsValid)
@@ -60,7 +60,6 @@ namespace his.Controllers
 
             patient.PatientCode = await _patientService.GeneratePatientCodeAsync("BN");
 
-            // Nhap khoa / Ma Nhan Vien = Ma BA
             if (!string.IsNullOrEmpty(patient.DepartmentCode))
                 patient.AdmissionCode = await _admissionSequenceService.GenerateAdmissionCodeAsync(patient.DepartmentCode);
 
@@ -86,11 +85,10 @@ namespace his.Controllers
                 {
                     try
                     {
-                        await AdmissionToEmr(patient);
+                        await EmrGenerators(patient);
                     }
                     catch (Exception ex)
                     {
-                        // Nếu cần log lỗi
                         Console.WriteLine("API error: " + ex.Message);
                     }
                 });
@@ -102,11 +100,10 @@ namespace his.Controllers
             }
             #endregion
 
-            // Trả về URL cần redirect (danh sách bệnh nhân)
             return Json(new { redirectUrl = Url.Action("Index", "Patients") });
         }
 
-        public async Task AdmissionToEmr(Patient patient)
+        public async Task EmrGenerators(Patient patient)
         {
             var urlSetting = await _settingService.GetByKey("api-emr");
             if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
@@ -117,7 +114,7 @@ namespace his.Controllers
                 {
                     var token = tokenSetting.Value;
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var url = $"{urlSetting.Value}/api/services/vendor/his/v2/emrgenerators"; // URL API thật của bạn
+                    var url = $"{urlSetting.Value}/api/services/vendor/his/v2/emrgenerators";
 
                     var formatDate = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
                     var emrDto = new EmrDto()
@@ -139,10 +136,9 @@ namespace his.Controllers
                         FK_MEEmrTypeNo = patient.EmrTypeCode,
                         FK_HRDepartmentNo = patient.DepartmentCode,
                         MEPatientBirthdayOnlyYear = false,
-                        AutoGenDocuments = true,
+                        AutoGenDocuments = false, // future set true
                         MEEmrSourceNo = string.Empty
                     };
-                    // Convert to JSON
                     string json = System.Text.Json.JsonSerializer.Serialize(emrDto);
 
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -152,19 +148,154 @@ namespace his.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var result = await response.Content.ReadAsStringAsync();
-                        //return Json(result);
                     }
                     else
                     {
-                        // Thất bại
                         var error = await response.Content.ReadAsStringAsync();
                         Console.WriteLine("Error: " + error);
-                        //return BadRequest($"Không thể gọi API EMR. Error: {error}");
                     }
                 }
             }
         }
 
+        public async Task EmrTransfer(EmrTransferHistoryDto model)
+        {
+            var urlSetting = await _settingService.GetByKey("api-emr");
+            if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
+            {
+                var client = _httpClientFactory.CreateClient();
+                var tokenSetting = await _settingService.GetByKey("api-emr-token");
+                if (tokenSetting != null)
+                {
+                    var token = tokenSetting.Value;
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var url = $"{urlSetting.Value}/api/services/vendor/his/emrtransfer";
+                    string json = System.Text.Json.JsonSerializer.Serialize(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await client.PostAsync(url, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        var error = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Error: " + error);
+                    }
+                }
+            }
+        }
+        public async Task EmrMerge(EmrMergeDto model)
+        {
+            var urlSetting = await _settingService.GetByKey("api-emr");
+            if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
+            {
+                var client = _httpClientFactory.CreateClient();
+                var tokenSetting = await _settingService.GetByKey("api-emr-token");
+                if (tokenSetting != null)
+                {
+                    var token = tokenSetting.Value;
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var url = $"{urlSetting.Value}/api/services/vendor/his/emrmerge";
+                    string json = System.Text.Json.JsonSerializer.Serialize(model);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await client.PostAsync(url, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        var error = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Error: " + error);
+                    }
+                }
+            }
+        }
+
+        public async Task Patients(PatientDto patient)
+        {
+            var urlSetting = await _settingService.GetByKey("api-emr");
+            if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
+            {
+                var client = _httpClientFactory.CreateClient();
+                var tokenSetting = await _settingService.GetByKey("api-emr-token");
+                if (tokenSetting != null)
+                {
+                    var token = tokenSetting.Value;
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var url = $"{urlSetting.Value}/api/services/vendor/his/v2/patients";
+                    string json = System.Text.Json.JsonSerializer.Serialize(patient);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await client.PostAsync(url, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        var error = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Error: " + error);
+                    }
+                }
+            }
+        }
+
+        public async Task Document(DocumentDto document)
+        {
+            var urlSetting = await _settingService.GetByKey("api-emr");
+            if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
+            {
+                var client = _httpClientFactory.CreateClient();
+                var tokenSetting = await _settingService.GetByKey("api-emr-token");
+                if (tokenSetting != null)
+                {
+                    var token = tokenSetting.Value;
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var url = $"{urlSetting.Value}/api/services/vendor/his/v2/document";
+                    string json = System.Text.Json.JsonSerializer.Serialize(document);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await client.PostAsync(url, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        var error = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Error: " + error);
+                    }
+                }
+            }
+        }
+
+        public async Task SignDocument(SignDocumentDto signDocument)
+        {
+            var urlSetting = await _settingService.GetByKey("api-emr");
+            if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
+            {
+                var client = _httpClientFactory.CreateClient();
+                var tokenSetting = await _settingService.GetByKey("api-emr-token");
+                if (tokenSetting != null)
+                {
+                    var token = tokenSetting.Value;
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var url = $"{urlSetting.Value}/api/services/vendor/his/v2/signdocument";
+                    string json = System.Text.Json.JsonSerializer.Serialize(signDocument);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await client.PostAsync(url, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        var error = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Error: " + error);
+                    }
+                }
+            }
+        }
 
         private async Task<string> GetAccessToken()
         {
@@ -201,7 +332,6 @@ namespace his.Controllers
                     return;
                 }
             }
-
 
             #region Setting
             var setting = new Setting()

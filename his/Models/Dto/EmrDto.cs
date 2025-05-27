@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace his.Models
+namespace his.Models.Dto
 {
     public class EmrDto
     {

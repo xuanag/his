@@ -207,6 +207,124 @@ public class EmrController : ControllerBase
         return Ok(thongTin);
     }
 
+    [HttpPost("ThongTinBenhAnNgoaiTru")]
+    public async Task<IActionResult> ThongTinBenhAnNgoaiTruAsync([FromBody] ThongTinBenhAnNgoaiTruRequest request)
+    {
+        var patient = await _patientService.GetByNoAsync(request.patientNo);
+        var thongTin = new ThongTinBenhAnNgoaiTru()
+        {
+            bacsidieutri = "Mai Kiêm Toàn",
+            bacsidieutrichinh = "Mai Kiêm Toàn",
+            cdgiaiphaututhi = new ICD()
+            {
+                maicd = "",
+                tenicd = ""
+            },
+            cdkhivaokhoadieutri = new ICD()
+            {
+                maicd = "E10.1",
+                tenicd = "Bệnh đái tháo đường phụ thuộc insuline (Có nhiễm toan ceton)"
+            },
+            cdkkbcapcuu = new ICD()
+            {
+                maicd = "I64",
+                tenicd = "Đột quị, không xác định do xuất huyết hay nhồi máu (Tai biến mạch máu não)"
+            },
+            cdnguyennhanchinhtuvong = new ICD()
+            {
+                maicd = "",
+                tenicd = ""
+            },
+            cdnoichuyenden = new ICD()
+            {
+                maicd = "I69.4",
+                tenicd = "Di chứng đột quỵ, không xác định là xuất huyết hay nhồi máu"
+            },
+            cdravien_benhchinh = new ICD()
+            {
+                maicd = "E10.1",
+                tenicd = "Bệnh đái tháo đường phụ thuộc insuline (Có nhiễm toan ceton)"
+            },
+            cdravien_benhkemtheo = [
+                new() {
+                        maicd = "E11",
+                        tenicd = "Bệnh đái tháo đường không phụ thuộc insuline"
+                    },
+                new() {
+                        maicd = "I10",
+                        tenicd = "Bệnh lý tăng huyết áp"
+                }],
+            cdravien_nguyennhan = new ICD()
+            {
+                maicd = "",
+                tenicd = ""
+            },
+            chuyenvien = new ChuyenVien()
+            {
+                chuyenvien_loaituyen = "",
+                chuyenvien_tenchuyenkhoa = ""
+            },
+            chuyenvienden = "",
+            dschuyenkhoa = [],
+            giaiphaubenh = "",
+            ketquadieutri = "Không thay đổi",
+            khamnghiemtuthi = "",
+            khoa = "Khoa Hồi sức tích cực và chống độc",
+            khoa_matat = "HSCC",
+            khoavao = "Khoa Hồi sức tích cực và chống độc",
+            loairavien = "",
+            mayte = "25018958",
+            ngaygioravien = "",
+            ngaygiovaokhoa = "2025-05-05 13:00:02.000",
+            ngaygiovaovien = "2025-05-05 11:17:20.000",
+            noigioithieu = "Trung tâm Y tế huyện Xuân Lộc",
+            phauthuthuat = [],
+            sobenhan = "25.021589",
+            soluutru = "",
+            songaydieutrikhoavao = "",
+            taibienbienchung = [],
+            thongtinnhiemkhuan = new ThongTinNhiemKhuan()
+            {
+                loidancuabacsi = "",
+                lydonhiemkhuan = "",
+                ngayphathiennhiemkhuan = "",
+                noinhiemkhuan = new NoiNhiemKhuan()
+                {
+                    noinhiemkhuan_lannay_mota = "",
+                    noinhiemkhuan_loai = "",
+                    noinhiemkhuan_tuyentruoc_mota = ""
+                },
+                phuongphapdieutrichinh = "",
+                tacnhannhiemkhuan = "",
+                thuthuatcanthiep = ""
+            },
+            thongtinsinhsan = new ThongTinSinhSan()
+            {
+                ds_thongtincon = [],
+                phuongphapde = "",
+                tinhtrangsanphusausinh = ""
+            },
+            thongtintainan = new ThongTinTaiNan()
+            {
+                loaitainan = "",
+                noixayratainan = "",
+                thoidiemtainan = ""
+            },
+            tinhhinhtuvong = new TinhHinhTuVong()
+            {
+                ngaygiotuvong = "",
+                tinhhinhtuvong_khac_tentinhhinh = "",
+                tinhhinhtuvong_loai = "",
+                tinhhinhtuvongthoidiem = ""
+            },
+            tongsongaydieutri = "",
+            tongsongaydieutri_chu = "",
+            tructiepvao = "HSCC",
+            vaoviendobenhnaylanthu = "1"
+        };
+        return Ok(thongTin);
+    }
+
     [HttpPost("ThongTinPhieuKhamBenhVaoVien")]
     public async Task<IActionResult> ThongTinPhieuKhamBenhVaoVienAsync([FromBody] ThongTinPhieuKhamBenhVaoVienRequest request)
     {
