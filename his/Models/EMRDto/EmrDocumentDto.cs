@@ -1,6 +1,6 @@
 ﻿namespace his.Models.Dto
 {
-    public class DocumentDto
+    public class EmrDocumentDto
     {
         public string FK_MEEmrNo { get; set; }
         public string FK_METemplateNo { get; set; }

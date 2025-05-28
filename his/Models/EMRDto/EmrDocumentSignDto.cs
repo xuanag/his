@@ -1,6 +1,6 @@
 ﻿namespace his.Models.Dto
 {
-    public class SignDocumentDto
+    public class EmrDocumentSignDto
     {
         public string Password { get; set; }
         public string UserName { get; set; }

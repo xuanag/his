@@ -5,6 +5,7 @@ using his.Services;
 using his.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -53,29 +54,48 @@ namespace his.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Create([FromBody] Patient patient)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromForm] PatientDto model)
         {
             if (!ModelState.IsValid)
                 return Json(new { success = false, message = "Dữ liệu không hợp lệ" });
 
-            patient.PatientCode = await _patientService.GeneratePatientCodeAsync("BN");
+            //if (!string.IsNullOrEmpty(model.makhoa))
+            //model.AdmissionCode = await _admissionSequenceService.GenerateAdmissionCodeAsync(model.makhoa);
 
-            if (!string.IsNullOrEmpty(patient.DepartmentCode))
-                patient.AdmissionCode = await _admissionSequenceService.GenerateAdmissionCodeAsync(patient.DepartmentCode);
+            //if (string.IsNullOrEmpty(model.loaiba))
+            //{
+            //    var emrTypeCode = "BBO";
+            //    var departmentE = await _categoryService.CategoryByTypeAndCode(Constants.CategoryType.Department, model.loaiba);
+            //    if (departmentE != null && !string.IsNullOrEmpty(departmentE.InitAction))
+            //    {
+            //        emrTypeCode = departmentE.InitAction;
+            //    }
+            //    var emrTypeE = await _categoryService.CategoryByTypeAndCode(Constants.CategoryType.EmrType, emrTypeCode);
+            //    model.loaiba = emrTypeCode;
+            //    model.loaiba = emrTypeE.Value;
+            //}
+            var admissionCode = await _admissionSequenceService.GenerateAdmissionCodeAsync(model.makhoa);
 
-            if (string.IsNullOrEmpty(patient.EmrTypeCode))
+            var patient = new Patient()
             {
-                var emrTypeCode = "BBO";
-                var departmentE = await _categoryService.CategoryByTypeAndCode(Constants.CategoryType.Department, patient.DepartmentCode);
-                if (departmentE != null && !string.IsNullOrEmpty(departmentE.InitAction))
-                {
-                    emrTypeCode = departmentE.InitAction;
-                }
-                var emrTypeE = await _categoryService.CategoryByTypeAndCode(Constants.CategoryType.EmrType, emrTypeCode);
-                patient.EmrTypeCode = emrTypeCode;
-                patient.EmrTypeName = emrTypeE.Value;
-            }
-                
+                PatientCode = model.mabenhnhan,
+                FullName = model.hoten,
+                DateOfBirth = DateTime.TryParse(model.ngaysinh, out var dob) ? dob : DateTime.Now,
+                Gender = model.gioitinh,
+                Marital = false, // default false, can be updated later
+                Address = model.diachi,
+                Phone = model.sodienthoai,
+                IdCardNo = model.cccdso,
+                IssuranceNo = model.mabhyt,
+                DepartmentCode = model.makhoa,
+                DepartmentName = model.tenkhoa,
+                EmrTypeCode = model.maloaiba,
+                EmrTypeName = model.loaiba,
+                Reason = model.lydotiepnhan,
+                AdmissionCode = admissionCode,
+                AdmissionDate = model.thoigianvaovien != null ? DateTime.Parse(model.thoigianvaovien) : DateTime.Now,
+            };
             await _patientService.CreateAsync(patient);
 
             #region CALL EMR API
@@ -213,7 +233,7 @@ namespace his.Controllers
             }
         }
 
-        public async Task Patients(PatientDto patient)
+        public async Task Patients(EmrPatientDto patient)
         {
             var urlSetting = await _settingService.GetByKey("api-emr");
             if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
@@ -241,7 +261,7 @@ namespace his.Controllers
             }
         }
 
-        public async Task Document(DocumentDto document)
+        public async Task Document(EmrDocumentDto document)
         {
             var urlSetting = await _settingService.GetByKey("api-emr");
             if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
@@ -269,7 +289,7 @@ namespace his.Controllers
             }
         }
 
-        public async Task SignDocument(SignDocumentDto signDocument)
+        public async Task SignDocument(EmrDocumentSignDto signDocument)
         {
             var urlSetting = await _settingService.GetByKey("api-emr");
             if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
