@@ -1,0 +1,45 @@
+﻿@using his.Models
+@model Setting
+
+<!-- Breadcrumb -->
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Chỉnh sửa Cài đặt</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="/">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/setting">Cài đặt</a>
+        </li>
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Cài đặt</div>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group"><label>Khóa</label><input asp-for="Key" class="form-control" /><span asp-validation-for="Key"></span></div>
+                            <div class="form-group"><label>Giá trị</label><textarea asp-for="Value" class="form-control"></textarea></div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Cập nhật</button>
+                        <a href="/setting" class="btn btn-secondary" title="Hủy - Trở về"><i class="fas fa-undo-alt"></i> Hủy - Trở về</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

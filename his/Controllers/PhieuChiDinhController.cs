@@ -16,12 +16,20 @@ namespace his.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IPhieuChiDinhService _service;
+        private readonly IAdmissionService _admissionservice;
+        private readonly IDocumentMappingService _documentmappingservice;
         private readonly ISettingService _settingService;
 
-        public PhieuChiDinhController(IHttpClientFactory httpClientFactory, IPhieuChiDinhService service, ISettingService settingService)
+        public PhieuChiDinhController(IHttpClientFactory httpClientFactory, 
+            IPhieuChiDinhService service, 
+            IAdmissionService admissionservice,
+            IDocumentMappingService documentmappingservice, 
+            ISettingService settingService)
         {
             _httpClientFactory = httpClientFactory;
             _service = service;
+            _admissionservice = admissionservice;
+            _documentmappingservice = documentmappingservice;
             _settingService = settingService;
         }
 
@@ -30,7 +38,10 @@ namespace his.Controllers
         {
             var phieu = new PhieuChiDinhCls
             {
+                AdmissionCode = model.AdmissionCode,
+                DepartmentCode = model.DepartmentCode,
                 BenhNhanId = model.BenhNhanId,
+                BenhNhanCode = model.BenhNhanCode,
                 NgayChiDinh = DateTime.Now,
                 DichVu = model.DichVu.Select(x => new DichVuChiDinh
                 {
@@ -44,48 +55,62 @@ namespace his.Controllers
 
             await _service.CreateAsync(phieu);
 
-            var document = new EmrDocumentDto
+            // Demo 1 cls 1 document: base ma cls mapping document emr
+            // combine phieu chi dinh cls with document emr, do later...
+            var emrNo = phieu.AdmissionCode;
+            var departmentCode = phieu.DepartmentCode;
+            var patientCode = phieu.BenhNhanCode;
+            var listDichvu = phieu.DichVu;
+            foreach (var dichvu in listDichvu)
             {
-                FK_MEEmrNo = model.AdmissionCode,
-                FK_METemplateNo = "",
-                MEEmrDocumentCode = "",
-                Old_MEEmrDocumentCode = "",
-                MEEmrDocumentDesc = "",
-                FK_HRDepartmentNo = "",
-                Data = new Newtonsoft.Json.Linq.JObject
+                var documentMapping = await _documentmappingservice.GetByCodeHISAsync(dichvu.Ma);
+                if (documentMapping != null)
                 {
-                    { "MaPhieu", phieu.Id },
-                    { "MaBenhNhan", phieu.BenhNhanId },
-                    { "NgayChiDinh", phieu.NgayChiDinh.ToString("yyyy-MM-dd") },
-                    { "DichVu", Newtonsoft.Json.Linq.JArray.FromObject(phieu.DichVu) }
-                },
-                AACreatedUser = "system",
-                Old_MEEmrDocumentID = null,
-                IsBackgroundInit = true,
-                MEEmrDocumentRefNo = phieu.Id,
-                MEEmrDocumentCreatedDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            };
-            #region CALL EMR API
-            try
-            {
-                _ = Task.Run(async () =>
-                {
+                    var document = new EmrDocumentDto
+                    {
+                        FK_MEEmrNo = emrNo,
+                        FK_METemplateNo = documentMapping.CodeEMR,
+                        MEEmrDocumentCode = documentMapping.CodeEMR,
+                        Old_MEEmrDocumentCode = "",
+                        MEEmrDocumentDesc = "Tạo từ HIS",
+                        FK_HRDepartmentNo = departmentCode,
+                        Data = new Newtonsoft.Json.Linq.JObject
+                        {
+                            { "MaPhieu", phieu.Id },
+                            { "MaBenhNhan", phieu.BenhNhanId },
+                            { "NgayChiDinh", phieu.NgayChiDinh.ToString("yyyy-MM-dd") },
+                            { "DichVu", Newtonsoft.Json.Linq.JArray.FromObject(phieu.DichVu) }
+                        },
+                        AACreatedUser = "emr",
+                        Old_MEEmrDocumentID = null,
+                        IsBackgroundInit = false,
+                        MEEmrDocumentRefNo = phieu.Id,
+                        MEEmrDocumentCreatedDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                    };
+
+                    #region CALL EMR API
                     try
                     {
-                        await Document(document);
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await Document(document);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("API error: " + ex.Message);
+                            }
+                        });
+
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("API error: " + ex.Message);
+                        Console.WriteLine("Error: " + ex.Message);
                     }
-                });
-
+                    #endregion
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: " + ex.Message);
-            }
-            #endregion
 
             return Ok();
         }

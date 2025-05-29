@@ -58,5 +58,11 @@ namespace his.Helper
             if (birthdate.Date > today.AddYears(-age)) age--;
             return age;
         }
+
+        public static string Truncate(string value, int maxLength = 100)
+        {
+            if (string.IsNullOrEmpty(value)) return string.Empty;
+            return value.Length <= maxLength ? value : value.Substring(0, maxLength) + "...";
+        }
     }
 }

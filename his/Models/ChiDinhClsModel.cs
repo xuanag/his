@@ -17,11 +17,11 @@ namespace his.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; } = null!;
-
+        public string AdmissionCode { get; set; } = null!;
+        public string DepartmentCode { get; set; } = string.Empty;
         public string BenhNhanId { get; set; } = null!;
-        public string mabenhan { get; set; } = null!;
+        public string BenhNhanCode { get; set; } = null!;
         public DateTime NgayChiDinh { get; set; } = DateTime.UtcNow;
-
         public List<DichVuChiDinh> DichVu { get; set; } = new();
     }
 }

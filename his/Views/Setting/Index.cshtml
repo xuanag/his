@@ -1,0 +1,60 @@
+﻿@using his.Models
+@using his.Helper
+@model List<Setting>
+
+<!-- Breadcrumb -->
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Cài đặt</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="/">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/setting">Cài đặt</a>
+        </li>
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex align-items-center">
+                    <h4 class="card-title m-3">Danh sách</h4>
+                    <a asp-action="Create" class="btn btn-primary m-2"><i class="fas fa-plus"></i> Thêm mới</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="add-row" class="display table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Giá trị</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Key</td>
+                                    <td>@Helpers.Truncate(item.Value, 100)</td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.Id">Sửa</a> |
+                                        <a asp-action="Delete" asp-route-id="@item.Id">Xoá</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
