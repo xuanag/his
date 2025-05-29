@@ -46,7 +46,7 @@
             <div class="sidebar-logo">
                 <!-- Logo Header -->
                 <div class="logo-header" data-background-color="dark">
-                    <a href="/" class="logo-text">
+                    <a href="/" class="logo">
                         HIS
                         @* <img src="/ui/assets/img/kaiadmin/logo_light.svg" alt="navbar brand" class="navbar-brand" height="20"> *@
                     </a>
@@ -68,7 +68,7 @@
                 <div class="sidebar-wrapper scrollbar scrollbar-inner scroll-content" style="height: 898px; margin-bottom: 0px; margin-right: 0px; max-height: none;">
                     <div class="sidebar-content">
                         <ul class="nav nav-secondary">
-                            <li class="nav-item active">
+                            @* <li class="nav-item active">
                                 <a data-bs-toggle="collapse" href="#dashboard" class="collapsed" aria-expanded="false">
                                     <i class="fas fa-home"></i>
                                     <p>Dashboard</p>
@@ -83,20 +83,19 @@
                                         </li>
                                     </ul>
                                 </div>
-                            </li>
+                            </li> *@
                             <li class="nav-section">
                                 <span class="sidebar-mini-icon">
                                     <i class="fa fa-ellipsis-h"></i>
                                 </span>
-                                <h4 class="text-section">Components</h4>
+                                <h4 class="text-section">MÀN HÌNH</h4>
                             </li>
                             <li class="nav-item">
                                 <a href="/patients">
-                                    <i class="fas fa-layer-group"></i>
-                                    <p>Người bệnh</p>
+                                    <i class="fas fa-users"></i>
+                                    <p>NGƯỜI BỆNH</p>
                                 </a>
-
-                                <a data-bs-toggle="collapse" href="#base">
+                                @* <a data-bs-toggle="collapse" href="#base">
                                     <i class="fas fa-layer-group"></i>
                                     <p>Base</p>
                                     <span class="caret"></span>
@@ -149,9 +148,26 @@
                                             </a>
                                         </li>
                                     </ul>
+                                </div> *@
+                            </li>
+
+                            <li class="nav-item">
+                                <a data-bs-toggle="collapse" href="#sidebarLayouts">
+                                    <i class="fas fa-cog"></i>
+                                    <p>CẤU HÌNH</p>
+                                    <span class="caret"></span>
+                                </a>
+                                <div class="collapse" id="sidebarLayouts">
+                                    <ul class="nav nav-collapse">
+                                        <li>
+                                            <a href="/documentmapping">
+                                                <span class="sub-item">Cấu hình Tờ phiếu</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
                             </li>
-                            <li class="nav-item">
+                     @*        <li class="nav-item">
                                 <a data-bs-toggle="collapse" href="#sidebarLayouts">
                                     <i class="fas fa-th-list"></i>
                                     <p>Sidebar Layouts</p>
@@ -315,7 +331,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                            </li>
+                            </li> *@
                         </ul>
                     </div>
                 </div>

@@ -1,0 +1,54 @@
+﻿@using his.Models
+@model DocumentMappingModel
+
+<!-- Breadcrumb -->
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Chỉnh sửa ánh xạ</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="/">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/documentmapping">Cấu hình tờ phiếu</a>
+        </li>
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Ánh xạ tờ phiếu HIS - EMR</div>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group"><label>Mã HIS</label><input asp-for="CodeHIS" class="form-control" /><span asp-validation-for="CodeHIS"></span></div>
+                            <div class="form-group"><label>Tên HIS</label><input asp-for="NameHIS" class="form-control" /></div>
+                            <div class="form-group"><label>Mã EMR</label><input asp-for="CodeEMR" class="form-control" /></div>
+                            <div class="form-group"><label>Tên EMR</label><input asp-for="NameEMR" class="form-control" /></div>
+                            <div class="form-group"><label>Loại</label><input asp-for="Type" class="form-control" /></div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" asp-for="IsActive" />
+                                <label class="form-check-label" for="IsActive">
+                                    Kích hoạt
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Cập nhật</button>
+                        <a href="/documentmapping" class="btn btn-secondary" title="Hủy - Trở về"><i class="fas fa-undo-alt"></i> Hủy - Trở về</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

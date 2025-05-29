@@ -1,0 +1,67 @@
+﻿@using his.Models
+@model List<DocumentMappingModel>
+
+<!-- Breadcrumb -->
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Cấu hình tờ phiếu</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="/">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/documentmapping">Cấu hình tờ phiếu</a>
+        </li>
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex align-items-center">
+                    <h4 class="card-title m-3">Danh sách</h4>
+                    <a asp-action="Create" class="btn btn-primary m-2"><i class="fas fa-plus"></i> Thêm mới</a>
+                    <a asp-action="ImportExcel" class="btn btn-info m-2"><i class="fas fa-file-import"></i> Import từ Excel</a>
+                    <a asp-action="ExportExcel" class="btn btn-success m-2"><i class="fas fa-file-export"></i> Export Excel</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="add-row" class="display table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Mã HIS</th>
+                                <th>Tên HIS</th>
+                                <th>Mã EMR</th>
+                                <th>Tên EMR</th>
+                                <th>Loại</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.CodeHIS</td>
+                                    <td>@item.NameHIS</td>
+                                    <td>@item.CodeEMR</td>
+                                    <td>@item.NameEMR</td>
+                                    <td>@item.Type</td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.Id">Sửa</a> |
+                                        <a asp-action="Delete" asp-route-id="@item.Id">Xoá</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

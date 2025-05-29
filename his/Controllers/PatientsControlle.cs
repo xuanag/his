@@ -1,4 +1,5 @@
-﻿using his.Helper;
+﻿using Bogus;
+using his.Helper;
 using his.Models;
 using his.Models.Dto;
 using his.Services;
@@ -6,9 +7,11 @@ using his.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Xml.Schema;
 
 namespace his.Controllers
 {
@@ -17,7 +20,7 @@ namespace his.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IPatientService _patientService;
         private readonly IAdmissionService _admissionService;
-        private readonly IAdmissionSequenceService _admissionSequenceService;
+        private readonly ISequenceService _sequenceService;
         private readonly ISettingService _settingService;
         private readonly ICategoryService _categoryService;
         private readonly IUserService _userService;
@@ -25,7 +28,7 @@ namespace his.Controllers
         public PatientsController(IHttpClientFactory httpClientFactory,
             IPatientService patientService,
             IAdmissionService admissionService,
-            IAdmissionSequenceService admissionSequenceService,
+            ISequenceService sequenceService,
             ISettingService settingService,
             ICategoryService categoryService,
             IUserService userService)
@@ -33,7 +36,7 @@ namespace his.Controllers
             _httpClientFactory = httpClientFactory;
             _patientService = patientService;
             _admissionService = admissionService;
-            _admissionSequenceService = admissionSequenceService;
+            _sequenceService = sequenceService;
             _settingService = settingService;
             _categoryService = categoryService;
             _userService = userService;
@@ -60,23 +63,7 @@ namespace his.Controllers
             if (!ModelState.IsValid)
                 return Json(new { success = false, message = "Dữ liệu không hợp lệ" });
 
-            //if (!string.IsNullOrEmpty(model.makhoa))
-            //model.AdmissionCode = await _admissionSequenceService.GenerateAdmissionCodeAsync(model.makhoa);
-
-            //if (string.IsNullOrEmpty(model.loaiba))
-            //{
-            //    var emrTypeCode = "BBO";
-            //    var departmentE = await _categoryService.CategoryByTypeAndCode(Constants.CategoryType.Department, model.loaiba);
-            //    if (departmentE != null && !string.IsNullOrEmpty(departmentE.InitAction))
-            //    {
-            //        emrTypeCode = departmentE.InitAction;
-            //    }
-            //    var emrTypeE = await _categoryService.CategoryByTypeAndCode(Constants.CategoryType.EmrType, emrTypeCode);
-            //    model.loaiba = emrTypeCode;
-            //    model.loaiba = emrTypeE.Value;
-            //}
-            var admissionCode = await _admissionSequenceService.GenerateAdmissionCodeAsync(model.makhoa);
-
+            // DEMO 01 PATIENT 01 EMR.
             var patient = new Patient()
             {
                 PatientCode = model.mabenhnhan,
@@ -87,16 +74,35 @@ namespace his.Controllers
                 Address = model.diachi,
                 Phone = model.sodienthoai,
                 IdCardNo = model.cccdso,
-                IssuranceNo = model.mabhyt,
-                DepartmentCode = model.makhoa,
-                DepartmentName = model.tenkhoa,
-                EmrTypeCode = model.maloaiba,
-                EmrTypeName = model.loaiba,
-                Reason = model.lydotiepnhan,
-                AdmissionCode = admissionCode,
-                AdmissionDate = model.thoigianvaovien != null ? DateTime.Parse(model.thoigianvaovien) : DateTime.Now,
+                IssuranceNo = model.mabhyt
             };
+            // futher decide 
+            // Admission details
+            var now = DateTime.Now;
+            if (!string.IsNullOrEmpty(model.makhoa))
+                patient.AdmissionCode = await GenerateAsync("emr", now.Year);
+            patient.AdmissionDate = model.thoigianvaovien != null ? DateTime.Parse(model.thoigianvaovien) : DateTime.Now;
+            patient.DepartmentCode = model.makhoa;
+            patient.DepartmentName = model.tenkhoa;
+            patient.EmrTypeCode = model.maloaiba;
+            patient.EmrTypeName = model.loaiba;
+            patient.Reason = model.lydotiepnhan;
+
             await _patientService.CreateAsync(patient);
+
+            var admission = new Admission()
+            {
+                AdmissionCode = patient.AdmissionCode,
+                AdmissionDate = patient.AdmissionDate,
+                DepartmentCode = patient.DepartmentCode,
+                DepartmentName = patient.DepartmentName,
+                EmrTypeCode = patient.EmrTypeCode,
+                EmrTypeName = patient.EmrTypeName,
+                Reason = patient.Reason,
+                PatientId = patient.Id,
+                PatientCode = patient.PatientCode
+            };
+            await _admissionService.CreateAsync(admission);
 
             #region CALL EMR API
             try
@@ -125,6 +131,7 @@ namespace his.Controllers
 
         public async Task EmrGenerators(Patient patient)
         {
+            // Future write logs to database or file
             var urlSetting = await _settingService.GetByKey("api-emr");
             if (urlSetting != null && !string.IsNullOrEmpty(urlSetting.Value))
             {
@@ -150,7 +157,7 @@ namespace his.Controllers
                         MEPatientPermanentResidence = "",
                         MEPatientContactAddressLine = patient.Address,
                         MEPatientIDCard = patient.IdCardNo,
-                        MEPatientIDCardDate = patient.IdCardDate?.ToString(formatDate),
+                        MEPatientIDCardDate = patient.DateOfBirth.AddYears(18).ToString(formatDate),
                         MEMarital = patient.Marital.ToString(),
                         MEPatientIDCardStateProvinces = "",
                         FK_MEEmrTypeNo = patient.EmrTypeCode,
@@ -205,6 +212,7 @@ namespace his.Controllers
                 }
             }
         }
+
         public async Task EmrMerge(EmrMergeDto model)
         {
             var urlSetting = await _settingService.GetByKey("api-emr");
@@ -585,6 +593,13 @@ namespace his.Controllers
                 await _categoryService.CreateAsync(category);
             }
             #endregion
+        }
+
+        private async Task<string> GenerateAsync(string key, int year)
+        {
+            int sequence = await _sequenceService.GetNextSequenceAsync(key, year);
+            string yy = (year % 100).ToString("D2");
+            return $"{yy}.{sequence:D6}";
         }
     }
 }

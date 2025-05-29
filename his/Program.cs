@@ -44,10 +44,13 @@ builder.Services.AddScoped(typeof(IMongoService<>), typeof(MongoService<>));
 // Register the custom collection repository
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IAdmissionService, AdmissionService>();
-builder.Services.AddScoped<IAdmissionSequenceService, AdmissionSequenceService>();
+builder.Services.AddScoped<ISequenceService, SequenceService>();
 builder.Services.AddScoped<ISettingService, SettingService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICLSService, CLSService>();
+builder.Services.AddScoped<IPhieuChiDinhService, PhieuChiDinhService>();
+builder.Services.AddScoped<IDocumentMappingService, DocumentMappingService>();
 #endregion
 
 

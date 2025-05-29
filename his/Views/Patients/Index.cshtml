@@ -32,9 +32,9 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex align-items-center">
-                    <h4 class="card-title">Danh sách người bệnh</h4>
-                    <button type="button" class="btn btn-primary btnTiepNhan" data-bs-toggle="modal" data-bs-target="#tiepNhanModal">
-                        Tiếp Nhận Người Bệnh
+                    <h4 class="card-title m-3">Danh sách người bệnh</h4>
+                    <button type="button" class="btn btn-primary btnTiepNhan" data-bs-toggle="modal" data-bs-target="#modalTiepNhan">
+                        <i class="fas fa-plus"></i> Tiếp Nhận Người Bệnh
                     </button>
                 </div>
             </div>
@@ -68,9 +68,20 @@
                                     <td>@p.DateOfBirth.ToString("dd/MM/yyyy")</td>
                                     <td>
                                         <div class="form-button-action">
-                                            <button type="button" class="btn btn-link btn-primary btn-lg" onclick="openModalXetNghiem()">Xét nghiệm</button>
-                                            <button type="button" class="btn btn-link btn-primary btn-lg">CĐHA</button>
-                                            <button type="button" class="btn btn-link btn-primary btn-lg">Kê thuốc</button>
+                                            <button type="button" class="btn btn-success btn-xs btnChiDinh m-2"
+                                                    data-mabenhnhan="@p.PatientCode"
+                                                    data-hoten="@p.FullName"
+                                                    data-gioitinh="@p.Gender"
+                                                    data-makhoa="@p.DepartmentCode" data-bs-toggle="modal" data-bs-target="#modalChiDinh">
+                                                Chỉ Định
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-xs btnKeThuoc m-2"
+                                                    data-mabenhnhan="@p.PatientCode"
+                                                    data-hoten="@p.FullName"
+                                                    data-gioitinh="@p.Gender"
+                                                    data-makhoa="@p.DepartmentCode" data-bs-toggle="modal" data-bs-target="#modalKeThuoc">
+                                                Kê thuốc
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -84,14 +95,14 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="tiepNhanModal" tabindex="-1" aria-labelledby="tiepNhanModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal fade" id="modalTiepNhan" tabindex="-1" aria-labelledby="modalTiepNhanLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="tiepNhanModalLabel">Tiếp Nhận Người Bệnh</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
-            </div>
             <form id="formTiepNhan">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tiepNhanModalLabel">Tiếp Nhận Người Bệnh</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
                 <div class="modal-body">
                     <input type="hidden" id="tenkhoa" name="tenkhoa" />
                     <input type="hidden" id="loaiba" name="loaiba" />
@@ -167,48 +178,94 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Nhập Viện/Nhập Khoa</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Nhập Viện/Nhập Khoa</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-undo-alt"></i> Hủy</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal -->
-<div id="modalXetNghiem" class="modal-overlay">
-    <div class="modal">
-        <span class="close" onclick="closeModalXetNghiem()">&times;</span>
-        <h2>Chỉ Định Xét Nghiệm</h2>
+<div class="modal fade" id="modalChiDinh" tabindex="-1" aria-labelledby="modalChiDinhLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <form id="formChiDinh">
+                <div class="modal-header">
+                    <h5 class="modal-title">Phiếu Chỉ Định Cận Lâm Sàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
 
-        <form action="/patients/create" method="post" id="xetNghiemForm">
-            <label for="maBenhNhan">Thông tin người bệnh</label>
-            Tên người bệnh: <b>Nguyễn Văn A</b> Ngày sinh: <b>01/01/1990</b> Giới tính: <b>Nam</b><br />
-            Mã người bệnh: <b>BN001</b>
-            Mã nhập khoa: <b>BA001</b> Mã khoa: <b>KH001</b><br /> Ngày nhập khoa: <b>01/01/2023</b> Mã BA: <b>BA001</b><br />
-            Thông tin hành chính: <br />
-            CCCD: <b>123456789</b> Ngày cấp: <b>01/01/2023</b> Số điện thoại: <b>0123456789</b> Địa chỉ: <b>123 Đường ABC, TP.HCM</b><br />
-            <br>
-            <label for="xetNghiem">Chọn Xét Nghiệm:</label>
-            <select id="xetNghiem" name="DanhSachXetNghiem[]" multiple>
-                <option value="XN001">Huyết học</option>
-                <option value="XN002">Sinh hóa máu</option>
-                <option value="XN003">Nước tiểu</option>
-                <option value="XN004">Chức năng gan</option>
-                <option value="XN005">CRP định lượng</option>
-            </select>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="mabenhnhan" class="form-label">Mã bệnh nhân</label>
+                            <input type="text" class="form-control" id="mabenhnhan" name="mabenhnhan" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="TenBenhNhan" class="form-label">Tên bệnh nhân</label>
+                            <input type="text" class="form-control" id="hoten" name="hoten" required />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Giới Tính</label>
+                            <select class="form-select" id="gioitinh" name="gioitinh">
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="makhoa" class="form-label">Khoa</label>
+                            <select class="form-select" id="makhoa" name="makhoa">
+                                <option value="">-- Chọn khoa --</option>
+                                @foreach (var department in departments)
+                                {
+                                    <option value="@department.Code">@department.Value</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="bacsichidinh" class="form-label">Bác sĩ chỉ định</label>
+                            <select class="form-select" id="bacsichidinh" name="bacsichidinh">
+                                <option value="Lê Đức Anh">Lê Đức Anh</option>
+                                <option value="Nguyễn Văn Thành">Nguyễn Văn Thành</option>
+                                <option value="Trần Ái My">Trần Ái My</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Dịch vụ cận lâm sàng</label>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="searchDichVuCls" placeholder="Tìm kiếm dịch vụ...">
+                            </div>
+                            <div class="scrollbar">
+                                <table class="table table-bordered table-responsive" id="tableDichVu">
+                                    <thead>
+                                        <tr>
+                                            <th>Chọn</th>
+                                            <th>Tên dịch vụ</th>
+                                            <th>Số lượng</th>
+                                            <th>Đơn giá (VNĐ)</th>
+                                            <th>Ghi chú</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
 
-            <label for="ghiChu">Ghi chú:</label>
-            <textarea id="ghiChu" name="GhiChu" rows="2"></textarea>
-
-            <div class="actions">
-                <button type="button" class="btn-close" onclick="closeModalXetNghiem()"><i class="fa-solid fa-xmark"></i> Huỷ</button>
-                <button type="submit" class="btn-submit"><i class="fa-solid fa-download"></i> Lưu chỉ định</button>
-            </div>
-        </form>
+                            </div>
+                            
+                            <div class="text-end mt-2">
+                                <strong>Tổng tạm tính: </strong>
+                                <span id="tongTienTamTinh">0</span> VNĐ
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" id="submitPhieuCls" class="btn btn-primary"><i class="fas fa-check"></i> Lưu phiếu</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-undo-alt"></i> Hủy</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
 
 @section Scripts
 {

@@ -4,45 +4,12 @@
     });
 
     $('.btnTiepNhan').on('click', function () {
-        const fakeData = randomData();
+        const fakeData = randomDataTiepNhan();
         showTiepNhanModal(fakeData);
     });
-
-    document.querySelector('#tiepNhanModal .btn-close').addEventListener('click', function (e) {
-        if (!confirm("Bạn có chắc muốn đóng?")) {
-            e.stopPropagation();
-        }
-        else {
-            // Đóng đúng modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('tiepNhanModal'));
-            if (modal) modal.hide();
-
-            // Clear backdrop nếu cần
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-            document.body.classList.remove('modal-open');
-            document.body.style = '';
-        }
-    });
-
-    document.querySelector('#tiepNhanModal .btn-secondary[data-bs-dismiss="modal"]').addEventListener('click', function (e) {
-        if (!confirm("Bạn có chắc muốn hủy tiếp nhận?")) {
-            e.stopPropagation();
-        }
-        else {
-            // Đóng đúng modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('tiepNhanModal'));
-            if (modal) modal.hide();
-
-            // Clear backdrop nếu cần
-            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-            document.body.classList.remove('modal-open');
-            document.body.style = '';
-        }
-    });
-
 });
 
-function randomData() {
+function randomDataTiepNhan() {
     // prepare
     const firstNames = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng"];
     const middleNames = ["Văn", "Thị", "Hữu", "Thế", "Minh"];
@@ -63,7 +30,7 @@ function randomData() {
     const maloaiba = maloaibas[Math.floor(Math.random() * maloaibas.length)];
     const soba = '';
     const makhoa = khoaNhapViens[Math.floor(Math.random() * khoaNhapViens.length)];
-    const mabenhnhan = `BN${Math.floor(Math.random() * 90000) + 10000}`;
+    const mabenhnhan = `BN${Math.floor(Math.random() * 90000000) + 10000000}`;
     const buong = '';
     const giuong = '';
     const cccdso = '0' + Array.from({ length: 11 }, () => Math.floor(Math.random() * 10)).join('');
@@ -153,3 +120,123 @@ function randomDate(startYear = 1940, endYear = 2020) {
 
     return `${year}-${month}-${day}`; // yyyy-MM-dd
 }
+
+// CLS
+$('.btnChiDinh').on('click', function () {
+    const btn = $(this);
+    $('#mabenhnhan', $("#modalChiDinh")).val(btn.data('mabenhnhan'));
+    $('#hoten', $("#modalChiDinh")).val(btn.data('hoten'));
+    $('#gioitinh', $("#modalChiDinh")).val(btn.data('gioitinh'));
+    $('#makhoa', $("#modalChiDinh")).val(btn.data('makhoa'));
+});
+
+$('#modalChiDinh').on('show.bs.modal', function () {
+    loadDichVuClsTable();
+});
+
+function loadDichVuClsTable() {
+    $.get('/api/canlamsang/search', function (data) {
+        const tbody = $('#tableDichVu tbody');
+        tbody.empty();
+
+        data.forEach(item => {
+            const row = `
+                <tr>
+                    <td><input type="checkbox" class="chk-dv" data-id="${item.ma}" data-ten="${item.ten}" data-dongia="${item.dongia}"/></td>
+                    <td>${item.ten}</td>
+                    <td>${item.dongia}</td>
+                    <td><input type="number" class="form-control soluong" min="1" value="1" /></td>
+                    <td><input type="text" class="form-control ghichu" placeholder="Ghi chú..." /></td>
+                </tr>
+            `;
+            tbody.append(row);
+        });
+
+        attachEvents();
+        updateTongTien();
+    });
+}
+
+function attachEvents() {
+    $('#tableDichVu').on('input change', '.chk-dv, .soluong', function () {
+        updateTongTien();
+    });
+}
+
+function updateTongTien() {
+    let tong = 0;
+    $("#tableDichVu tbody tr").each(function () {
+        const chk = $(this).find('.chk-dv');
+        if (chk.is(':checked')) {
+            const donGia = parseFloat(chk.data('dongia'));
+            const soLuong = parseInt($(this).find('.soluong').val()) || 1;
+            tong += donGia * soLuong;
+        }
+    });
+    
+    $("#tongTienTamTinh").text(tong.toLocaleString('vi-VN'));
+}
+
+function getSelectedDichVuCls() {
+    const selected = [];
+
+    $('#table-dichvu-cls tbody tr').each(function () {
+        const checkbox = $(this).find('.chk-dichvu');
+        if (checkbox.is(':checked')) {
+            selected.push({
+                ma: $(this).data('id'),
+                soluong: parseInt($(this).find('.input-soluong').val()) || 1,
+                dongia: parseFloat($(this).find('.input-dongia').val()) || 0,
+                ghichu: $(this).find('.input-ghichu').val() || ''
+            });
+        }
+    });
+
+    return selected;
+}
+
+$('#searchDichVuCls').on('input', function () {
+    const keyword = $(this).val().toLowerCase();
+
+    $('#tableDichVu tbody tr').each(function () {
+        const ten = $(this).data('ten');
+        $(this).toggle(ten.includes(keyword));
+    });
+});
+
+$("#formChiDinh").on("submit", function (e) {
+    e.preventDefault();
+    const BenhNhanId = $('#mabenhnhan', $("#modalChiDinh")).val();
+    const DichVu = [];
+
+    $("#tableDichVu tbody tr").each(function () {
+        const chk = $(this).find('.chk-dv');
+        if (chk.is(':checked')) {
+            DichVu.push({
+                ma: chk.data('id'),
+                ten: chk.data('ten'),
+                donGia: parseFloat(chk.data('dongia')),
+                soLuong: parseInt($(this).find('.soluong').val()),
+                ghiChu: $(this).find('.ghichu').val()
+            });
+        }
+    });
+
+    const data = {
+        BenhNhanId,
+        DichVu
+    };
+
+    console.log(data);
+    $.ajax({
+        url: '/api/phieuchidinh/create',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function () {
+            alert("Lưu thành công");
+            $("#modalCanLamSang").modal("hide");
+            location.reload();
+        }
+    });
+});

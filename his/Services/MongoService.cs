@@ -17,7 +17,7 @@ namespace his.Services
             _collection = database.GetCollection<T>(collectionName);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<List<T>> GetAllAsync()
         {
             return await _collection.Find(_ => true).ToListAsync();
         }

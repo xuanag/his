@@ -22,16 +22,21 @@ namespace his.Models
         public DateTime? IdCardDate { get; set; }
         public string IssuranceNo { get; set; } = string.Empty;
         public string IssuranceDate { get; set; } = string.Empty;
+        public string Nation { get; set; } = string.Empty; //Dan Toc
+        public string NationCode { get; set; } = string.Empty; //Ma Dan Toc
+
+        // Move to Admission.cs later
+        // Emr
+        public string AdmissionCode { get; set; } = string.Empty; // EmrNo
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
+        public DateTime? AdmissionDate { get; set; }
         public string DepartmentCode { get; set; } = string.Empty;
         public string DepartmentName { get; set; } = string.Empty;
         public string EmrTypeName { get; set; } = string.Empty;
         public string EmrTypeCode { get; set; } = string.Empty;
-        public string Nation { get; set; } = string.Empty; //Dan Toc
-        public string NationCode { get; set; } = string.Empty; //Ma Dan Toc
-        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateTime? AdmissionDate { get; set; }
         public string Reason { get; set; } = string.Empty;
-        public string AdmissionCode { get; set; } = string.Empty; // emrNo
+
+        // Extension fields
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime? Created { get; set; } = DateTime.Now;

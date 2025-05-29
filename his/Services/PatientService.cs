@@ -25,7 +25,7 @@ namespace his.Services
                     Builders<Patient>.Filter.Regex("FullName", new BsonRegularExpression(keyword, "i")),
                     Builders<Patient>.Filter.Regex("PatientCode", new BsonRegularExpression(keyword, "i")));
 
-            return await _collection.Find(filter).SortByDescending(m => m.PatientCode).ToListAsync();
+            return await _collection.Find(filter).SortByDescending(m => m.Created).SortByDescending(m => m.PatientCode).ToListAsync();
         }
 
         public async Task<string> GeneratePatientCodeAsync(string refix)

@@ -1,17 +1,16 @@
-.logo-text {
+.logo {
     font-size: 26px;
     font-weight: 700;
-    color: #ffffff;
+    color: #ffffff!important;
     text-decoration: none;
     letter-spacing: 1px;
     transition: all 0.3s ease;
     display: inline-block;
 }
-
-    .logo-text span {
-        color: #00d1b2;
-    }
-
-    .logo-text:hover {
+    .logo:hover {
         opacity: 0.85;
     }
+.scrollbar {
+    max-height: 300px;
+    overflow-y: auto;
+}
