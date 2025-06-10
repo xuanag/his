@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HIS | PHẦN MỀM QUẢN LÝ HỆ THỐNG THÔNG TIN BỆNH VIỆN</title>
+    <title>@Html.Raw(ViewData["Title"])</title>
     <!-- Favicon -->
-    <link rel="icon" href="/ui/assets/img/kaiadmin/favicon.ico" type="image/x-icon" />
+    @* <link rel="icon" href="/ui/assets/img/kaiadmin/favicon.ico" type="image/x-icon" /> *@
+    <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
     <!-- Fonts and icons -->
     <script src="/ui/assets/js/plugin/webfont/webfont.min.js"></script>
     <script>
@@ -47,8 +48,7 @@
                 <!-- Logo Header -->
                 <div class="logo-header" data-background-color="dark">
                     <a href="/" class="logo">
-                        HIS
-                        @* <img src="/ui/assets/img/kaiadmin/logo_light.svg" alt="navbar brand" class="navbar-brand" height="20"> *@
+                        <img src="~/logo.png" alt="navbar brand" class="navbar-brand" height="35">
                     </a>
                     <div class="nav-toggle">
                         <button class="btn btn-toggle toggle-sidebar">
@@ -91,6 +91,10 @@
                                 <h4 class="text-section">MÀN HÌNH</h4>
                             </li>
                             <li class="nav-item">
+                                <a href="/dashboard">
+                                    <i class="far fa-chart-bar"></i>
+                                    <p>DASHBOARD</p>
+                                </a>
                                 <a href="/patients">
                                     <i class="fas fa-users"></i>
                                     <p>NGƯỜI BỆNH</p>
@@ -504,7 +508,7 @@
                                     </div>
                                     <span class="profile-username">
                                         <span class="op-7">Hi,</span>
-                                        <span class="fw-bold">Hizrian</span>
+                                        <span class="fw-bold">Xuan Tran</span>
                                     </span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -514,8 +518,8 @@
                                                 <img src="/ui/assets/img/profile.jpg" alt="image profile" class="avatar-img rounded">
                                             </div>
                                             <div class="u-text">
-                                                <h4>Hizrian</h4>
-                                                <p class="text-muted">hello@example.com</p>
+                                                <h4>Xuan Tran</h4>
+                                                <p class="text-muted">xuantm.ag@gmail.com</p>
                                                 <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
                                             </div>
                                         </div>

@@ -141,7 +141,7 @@ function loadDichVuClsTable() {
 
         data.forEach(item => {
             const row = `
-                <tr>
+                <tr data-ten="${item.ten}">
                     <td><input type="checkbox" class="chk-dv" data-id="${item.ma}" data-ten="${item.ten}" data-dongia="${item.dongia}"/></td>
                     <td>${item.ten}</td>
                     <td>${item.dongia}</td>
