@@ -1,0 +1,130 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Theo dõi chỉ số bất thường";
+}
+
+<div class="container bg-white rounded shadow p-4" id="reportArea">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <h5 class="fw-bold">📈 Theo dõi chỉ số xét nghiệm</h5>
+        <div class="btn-group controls">
+            <button class="btn btn-sm btn-outline-secondary" onclick="exportPDF()">📤 Xuất PDF</button>
+            <button class="btn btn-sm btn-outline-primary" onclick="window.print()">🖨 In</button>
+        </div>
+    </div>
+
+    <!-- Chọn chỉ số & thời gian -->
+    <div class="row controls mb-4">
+        <div class="col-md-4 mb-2">
+            <label for="indicatorSelect" class="form-label">Chọn chỉ số</label>
+            <select id="indicatorSelect" class="form-select" onchange="updateChart()">
+                <option value="glucose">Glucose</option>
+                <option value="uric">Uric Acid</option>
+                <option value="cholesterol">Cholesterol</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-2">
+            <label for="timeRange" class="form-label">Khoảng thời gian</label>
+            <select id="timeRange" class="form-select" onchange="updateChart()">
+                <option value="7">7 ngày</option>
+                <option value="30" selected>1 tháng</option>
+                <option value="90">3 tháng</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Biểu đồ -->
+    <canvas id="chartCanvas"></canvas>
+
+    <!-- Gợi ý AI -->
+    <div class="mt-4 p-3 bg-light rounded">
+        <h6 class="fw-bold">🧠 Gợi ý AI (ICD-10)</h6>
+        <p id="aiSuggestion">Hệ thống đang phân tích...</p>
+    </div>
+</div>
+
+@section Scripts
+{
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        const indicatorData = {
+          glucose: {
+            label: 'Glucose (mg/dL)',
+            values: [95, 110, 130, 150, 170, 180],
+            suggestions: "Chỉ số cao có thể gợi ý nguy cơ tiền tiểu đường (R73.03 theo ICD-10)."
+          },
+          uric: {
+            label: 'Uric Acid (mg/dL)',
+            values: [6.0, 6.5, 7.0, 7.4, 7.8, 8.0],
+            suggestions: "Chỉ số cao có thể liên quan đến Gout (M10.9 theo ICD-10)."
+          },
+          cholesterol: {
+            label: 'Cholesterol (mg/dL)',
+            values: [190, 200, 210, 230, 240, 250],
+            suggestions: "Chỉ số tăng có thể dẫn đến rối loạn lipid máu (E78.5 theo ICD-10)."
+          }
+        };
+
+        let chart;
+
+        function updateChart() {
+          const indicator = document.getElementById("indicatorSelect").value;
+          const timeRange = document.getElementById("timeRange").value;
+          const data = indicatorData[indicator];
+
+          // Sample labels (ngày)
+          const labels = [...Array(Number(timeRange)).keys()].map(i => `Ngày ${i + 1}`);
+          const slicedData = Array.from({length: Number(timeRange)}, (_, i) =>
+            data.values[i % data.values.length]
+          );
+
+          // Update AI suggestion
+          document.getElementById("aiSuggestion").innerText = data.suggestions;
+
+          if (chart) chart.destroy();
+
+          const ctx = document.getElementById('chartCanvas').getContext('2d');
+          chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: data.label,
+                data: slicedData,
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13,110,253,0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              aspectRatio: 2,
+              plugins: {
+                legend: { display: true }
+              },
+              scales: {
+                y: { beginAtZero: false }
+              }
+            }
+          });
+        }
+
+        function exportPDF() {
+          const element = document.getElementById("reportArea");
+          html2pdf().from(element).set({
+            margin: 0.5,
+            filename: 'bao-cao-chi-so.pdf',
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+          }).save();
+        }
+
+        // Load mặc định
+        window.onload = updateChart;
+    </script>
+}

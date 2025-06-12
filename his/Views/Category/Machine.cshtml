@@ -1,0 +1,226 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Quản lý máy xét nghiệm - Onelab";
+}
+
+<div class="container">
+    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+        <div>
+            <h3 class="fw-bold mb-3">Quản lý máy xét nghiệm</h3>
+        </div>
+        <div class="ms-md-auto py-2 py-md-0">
+            <button class="btn btn-primary btn-round me-2" onclick="openModal()">➕ Thêm máy mới</button>
+            <button class="btn btn-info btn-round me-2" onclick="exportToExcel()">📥 Xuất Excel</button>
+        </div>
+    </div>
+
+    <!-- Bộ lọc -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="filterType" class="form-label">Chọn loại máy:</label>
+            <select class="form-select" id="filterType" onchange="applyFilter()">
+                <option value="">-- Lọc theo loại máy --</option>
+                <option>Sinh hóa</option>
+                <option>Huyết học</option>
+                <option>Miễn dịch</option>
+                <option>Sinh học phân tử</option>
+                <option>Nước tiểu</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="filterStatus" class="form-label">Lọc trạng thái:</label>
+            <select class="form-select" id="filterStatus" onchange="applyFilter()">
+                <option value="">-- Lọc theo trạng thái --</option>
+                <option>Đang hoạt động</option>
+                <option>Đang bảo trì</option>
+                <option>Ngưng sử dụng</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Bảng danh sách -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover" id="machineTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Tên máy</th>
+                    <th>Loại</th>
+                    <th>Hãng</th>
+                    <th>Model</th>
+                    <th>Năm</th>
+                    <th>Trạng thái</th>
+                    <th>Ghi chú</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Dữ liệu sẽ được sinh tự động -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Thêm/Sửa -->
+<div class="modal fade" id="machineModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <h5 id="modalTitle">Thêm máy mới</h5>
+            <input class="form-control mb-2" id="inputName" placeholder="Tên máy" />
+            <input class="form-control mb-2" id="inputType" placeholder="Loại" />
+            <input class="form-control mb-2" id="inputBrand" placeholder="Hãng" />
+            <input class="form-control mb-2" id="inputModel" placeholder="Model" />
+            <input class="form-control mb-2" id="inputYear" placeholder="Năm sử dụng" type="number" />
+            <select class="form-select mb-2" id="inputStatus">
+                <option>Đang hoạt động</option>
+                <option>Đang bảo trì</option>
+                <option>Ngưng sử dụng</option>
+            </select>
+            <textarea class="form-control mb-2" id="inputNote" placeholder="Ghi chú hiệu chuẩn, sửa chữa..."></textarea>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                <button class="btn btn-success" onclick="saveMachine()">💾 Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="calendarModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content p-3">
+            <h5>Lịch hiệu chuẩn máy - Onelab</h5>
+            <div id="calendarContainer" style="min-height: 400px;"></div>
+            <button class="btn btn-secondary mt-3" data-bs-dismiss="modal">Đóng</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Thêm CDN FullCalendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
+    <script>
+        const machines = [
+          { name: 'AU480', type: 'Sinh hóa', brand: 'Beckman Coulter', model: 'AU480', year: 2022, status: 'Đang hoạt động', note: 'Hiệu chuẩn 5/2024' },
+          { name: 'XT-2000i', type: 'Huyết học', brand: 'Sysmex', model: 'XT-2000i', year: 2021, status: 'Đang bảo trì', note: 'Lỗi cuvet' },
+          { name: 'i1000SR', type: 'Miễn dịch', brand: 'Abbott', model: 'i1000SR', year: 2020, status: 'Đang hoạt động', note: '' },
+          { name: 'CFX96', type: 'Sinh học phân tử', brand: 'Bio-Rad', model: 'CFX96', year: 2023, status: 'Đang hoạt động', note: 'Chuẩn nội tháng 6' },
+          { name: 'URIT-500B', type: 'Nước tiểu', brand: 'URIT', model: '500B', year: 2021, status: 'Ngưng sử dụng', note: 'Lỗi mainboard' }
+        ];
+        let editingIndex = -1;
+
+        function renderTable() {
+          const tbody = document.getElementById("tableBody");
+          tbody.innerHTML = '';
+          const filterType = document.getElementById("filterType").value;
+          const filterStatus = document.getElementById("filterStatus").value;
+
+          machines.forEach((m, i) => {
+            if ((filterType && m.type !== filterType) || (filterStatus && m.status !== filterStatus)) return;
+
+            const statusClass = m.status === 'Đang hoạt động' ? 'status-active' :
+                                m.status === 'Đang bảo trì' ? 'status-maintain' : 'status-inactive';
+
+            const row = `<tr>
+              <td>${i + 1}</td>
+              <td>${m.name}</td>
+              <td>${m.type}</td>
+              <td>${m.brand}</td>
+              <td>${m.model}</td>
+              <td>${m.year}</td>
+              <td class="${statusClass}">${m.status}</td>
+              <td>${m.note || ''}</td>
+              <td>
+                <button class="btn btn-sm btn-warning" onclick="editMachine(${i})">✏️</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteMachine(${i})">🗑️</button>
+              </td>
+            </tr>`;
+            tbody.innerHTML += row;
+          });
+        }
+
+        function openModal() {
+          editingIndex = -1;
+          document.getElementById("modalTitle").innerText = "Thêm máy mới";
+          ['Name','Type','Brand','Model','Year','Status','Note'].forEach(id => document.getElementById('input'+id).value = '');
+          new bootstrap.Modal(document.getElementById("machineModal")).show();
+        }
+
+        function saveMachine() {
+          const m = {
+            name: document.getElementById("inputName").value,
+            type: document.getElementById("inputType").value,
+            brand: document.getElementById("inputBrand").value,
+            model: document.getElementById("inputModel").value,
+            year: parseInt(document.getElementById("inputYear").value),
+            status: document.getElementById("inputStatus").value,
+            note: document.getElementById("inputNote").value
+          };
+
+          if (editingIndex >= 0) {
+            machines[editingIndex] = m;
+          } else {
+            machines.push(m);
+          }
+          bootstrap.Modal.getInstance(document.getElementById("machineModal")).hide();
+          renderTable();
+        }
+
+        function editMachine(index) {
+          editingIndex = index;
+          const m = machines[index];
+          document.getElementById("modalTitle").innerText = "Sửa thông tin máy";
+          document.getElementById("inputName").value = m.name;
+          document.getElementById("inputType").value = m.type;
+          document.getElementById("inputBrand").value = m.brand;
+          document.getElementById("inputModel").value = m.model;
+          document.getElementById("inputYear").value = m.year;
+          document.getElementById("inputStatus").value = m.status;
+          document.getElementById("inputNote").value = m.note;
+          new bootstrap.Modal(document.getElementById("machineModal")).show();
+        }
+
+        function deleteMachine(index) {
+          if (confirm("Xác nhận xoá máy này?")) {
+            machines.splice(index, 1);
+            renderTable();
+          }
+        }
+
+        function applyFilter() {
+          renderTable();
+        }
+
+        // Khởi tạo
+        renderTable();
+
+              function exportToExcel() {
+          const ws_data = [["Tên máy", "Loại", "Hãng", "Model", "Năm", "Trạng thái", "Ghi chú"]];
+          machines.forEach(m => {
+            ws_data.push([m.name, m.type, m.brand, m.model, m.year, m.status, m.note]);
+          });
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.aoa_to_sheet(ws_data);
+          XLSX.utils.book_append_sheet(wb, ws, "Danh sách máy");
+          XLSX.writeFile(wb, "may_xet_nghiem_onelab.xlsx");
+        }
+                function sendMaintenanceReport() {
+          const maintenanceMachines = machines.filter(m => m.status === "Đang bảo trì");
+          if (maintenanceMachines.length === 0) {
+            alert("Hiện không có máy nào đang bảo trì.");
+            return;
+          }
+
+          const content = maintenanceMachines.map((m, i) =>
+            `${i+1}. ${m.name} - ${m.type} (${m.brand} - ${m.model})\nGhi chú: ${m.note}`
+          ).join("\n\n");
+
+          // Giả lập gửi email (sẽ tích hợp API SMTP thực tế sau)
+          alert("📨 Gửi email thành công với nội dung:\n\n" + content);
+        }
+    </script>
+}
+

@@ -1,0 +1,220 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Theo dõi chỉ số bất thường";
+}
+
+<div class="container" id="dashboard">
+    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+        <div>
+            <h3 class="fw-bold mb-3">Dashboard Xét nghiệm</h3>
+        </div>
+        <div class="ms-md-auto py-2 py-md-0">
+            <button class="btn btn-label-info btn-round me-2" onclick="exportToExcel()">Xuất báo báo</button>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="markerSelect" class="form-label">Chọn chỉ số:</label>
+            <select id="markerSelect" class="form-select" onchange="renderChart()">
+                <option value="Glucose" selected>Glucose</option>
+                <option value="Creatinine">Creatinine</option>
+                <option value="Ure">Ure</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="timeFilter" class="form-label">Lọc thời gian:</label>
+            <select id="timeFilter" class="form-select" onchange="renderChart()">
+                <option value="1">1 tháng</option>
+                <option value="3" selected>3 tháng</option>
+                <option value="6">6 tháng</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <canvas id="trendChart" height="100"></canvas>
+
+    <!-- AI Suggestion -->
+    <div id="aiSuggestion" class="mt-4 alert alert-warning d-none"></div>
+
+    <!-- Table -->
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered table-sm" id="resultTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Ngày</th>
+                    <th>Chỉ số</th>
+                    <th>Giá trị</th>
+                    <th>Xu hướng</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        const testData = [
+                // Glucose
+        { date: "2025-01-10", marker: "Glucose", value: 110 },
+        { date: "2025-02-10", marker: "Glucose", value: 125 },
+        { date: "2025-03-10", marker: "Glucose", value: 138 },
+        { date: "2025-04-10", marker: "Glucose", value: 142 },
+        { date: "2025-05-10", marker: "Glucose", value: 150 },
+        { date: "2025-06-10", marker: "Glucose", value: 145 },
+
+        // Creatinine
+        { date: "2025-01-10", marker: "Creatinine", value: 1.1 },
+        { date: "2025-02-10", marker: "Creatinine", value: 1.3 },
+        { date: "2025-03-10", marker: "Creatinine", value: 1.6 },
+        { date: "2025-04-10", marker: "Creatinine", value: 1.7 },
+        { date: "2025-05-10", marker: "Creatinine", value: 1.9 },
+        { date: "2025-06-10", marker: "Creatinine", value: 2.1 },
+
+        // Ure
+        { date: "2025-01-10", marker: "Ure", value: 35 },
+        { date: "2025-02-10", marker: "Ure", value: 39 },
+        { date: "2025-03-10", marker: "Ure", value: 41 },
+        { date: "2025-04-10", marker: "Ure", value: 43 },
+        { date: "2025-05-10", marker: "Ure", value: 47 },
+        { date: "2025-06-10", marker: "Ure", value: 49 },
+
+        // GOT (AST)
+        { date: "2025-01-10", marker: "GOT", value: 22 },
+        { date: "2025-02-10", marker: "GOT", value: 26 },
+        { date: "2025-03-10", marker: "GOT", value: 28 },
+        { date: "2025-04-10", marker: "GOT", value: 33 },
+        { date: "2025-05-10", marker: "GOT", value: 38 },
+        { date: "2025-06-10", marker: "GOT", value: 42 },
+
+        // GPT (ALT)
+        { date: "2025-01-10", marker: "GPT", value: 30 },
+        { date: "2025-02-10", marker: "GPT", value: 34 },
+        { date: "2025-03-10", marker: "GPT", value: 39 },
+        { date: "2025-04-10", marker: "GPT", value: 46 },
+        { date: "2025-05-10", marker: "GPT", value: 51 },
+        { date: "2025-06-10", marker: "GPT", value: 57 },
+
+        // HbA1c
+        { date: "2025-01-10", marker: "HbA1c", value: 5.8 },
+        { date: "2025-02-10", marker: "HbA1c", value: 6.2 },
+        { date: "2025-03-10", marker: "HbA1c", value: 6.5 },
+        { date: "2025-04-10", marker: "HbA1c", value: 6.8 },
+        { date: "2025-05-10", marker: "HbA1c", value: 7.1 },
+        { date: "2025-06-10", marker: "HbA1c", value: 7.4 },
+
+        // Triglyceride
+        { date: "2025-01-10", marker: "Triglyceride", value: 145 },
+        { date: "2025-02-10", marker: "Triglyceride", value: 160 },
+        { date: "2025-03-10", marker: "Triglyceride", value: 185 },
+        { date: "2025-04-10", marker: "Triglyceride", value: 190 },
+        { date: "2025-05-10", marker: "Triglyceride", value: 210 },
+        { date: "2025-06-10", marker: "Triglyceride", value: 225 }
+        ];
+
+        // Giả lập gợi ý từ AI ICD-10
+        const icd10Suggestions = {
+          Glucose: { code: "E11", reason: "Tăng đường huyết", suggest: "Theo dõi tiểu đường type 2" },
+          Creatinine: { code: "N18", reason: "Suy thận", suggest: "Đánh giá chức năng thận (eGFR)" },
+          Ure: { code: "R79", reason: "Rối loạn nitơ máu", suggest: "Kiểm tra BUN/Creatinine ratio" }
+        };
+
+        let chartInstance;
+
+        function renderChart() {
+          const marker = document.getElementById("markerSelect").value;
+          const months = parseInt(document.getElementById("timeFilter").value);
+          const now = new Date();
+
+          const filtered = testData.filter(d => {
+            const date = new Date(d.date);
+            const monthsAgo = new Date(now.getFullYear(), now.getMonth() - months, now.getDate());
+            return d.marker === marker && date >= monthsAgo;
+          }).sort((a,b) => new Date(a.date) - new Date(b.date));
+
+          const labels = filtered.map(d => d.date);
+          const values = filtered.map(d => d.value);
+
+          if (chartInstance) chartInstance.destroy();
+          const ctx = document.getElementById('trendChart').getContext('2d');
+          chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [{
+                label: `${marker} - xu hướng`,
+                data: values,
+                fill: false,
+                borderColor: 'blue',
+                tension: 0.3
+              }]
+            }
+          });
+
+          updateTable(filtered);
+          showAISuggestion(marker, values);
+        }
+
+        function updateTable(data) {
+          const tbody = document.querySelector("#resultTable tbody");
+          tbody.innerHTML = "";
+          for (let i = 0; i < data.length; i++) {
+            const d = data[i];
+            let trendIcon = "";
+            if (i > 0) {
+              const prev = data[i - 1].value;
+              trendIcon = d.value > prev
+                ? `<span class="trend-up icon-up">Tăng</span>`
+                : d.value < prev
+                ? `<span class="trend-down icon-down">Giảm</span>`
+                : "Ổn định";
+            } else {
+              trendIcon = "-";
+            }
+
+            tbody.innerHTML += `
+              <tr>
+                <td>${d.date}</td>
+                <td>${d.marker}</td>
+                <td>${d.value}</td>
+                <td>${trendIcon}</td>
+              </tr>`;
+          }
+        }
+
+        function showAISuggestion(marker, values) {
+          const box = document.getElementById("aiSuggestion");
+          const abnormal = (
+            (marker === "Glucose" && values.some(v => v > 125)) ||
+            (marker === "Creatinine" && values.some(v => v > 1.4)) ||
+            (marker === "Ure" && values.some(v => v > 40))
+          );
+
+          if (abnormal) {
+            const { code, reason, suggest } = icd10Suggestions[marker];
+            box.innerHTML = `
+              🤖 <strong>Cảnh báo AI:</strong><br/>
+              📌 <strong>${reason}</strong><br/>
+              🧾 Gợi ý ICD-10: <strong>${code}</strong><br/>
+              💡 Hướng dẫn: ${suggest}
+            `;
+            box.classList.remove("d-none");
+          } else {
+            box.classList.add("d-none");
+          }
+        }
+
+        function exportToExcel() {
+          const table = document.querySelector("#resultTable");
+          const wb = XLSX.utils.table_to_book(table, {sheet:"Sheet1"});
+          XLSX.writeFile(wb, 'dashboard_ai.xlsx');
+        }
+
+        window.onload = () => renderChart();
+    </script>
+}

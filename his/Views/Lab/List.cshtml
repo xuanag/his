@@ -1,0 +1,232 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Danh sách mẫu xét nghiệm - Onelab";
+}
+
+@section Styles
+{
+    <style>
+        .resizable {
+            resize: horizontal;
+            overflow: auto;
+            min-width: 300px;
+            max-width: 600px;
+        }
+
+        .scrollable-table {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .table-patients th, .table-patients td {
+            word-wrap: break-word;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            min-height: 300px;
+        }
+
+            .result-box h6 {
+                font-weight: bold;
+            }
+
+        .pagination-container {
+            margin-top: 10px;
+        }
+
+        .table-results th, .table-results td {
+            padding: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .table-hover tbody tr.selected {
+            background-color: #cce5ff;
+        }
+
+        .ai-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+    </style>
+}
+<div class="container-fluid py-4">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <input type="text" class="form-control" id="searchSID" placeholder="🔍 Tìm SID...">
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" id="searchName" placeholder="🔍 Tìm tên bệnh nhân...">
+        </div>
+        <div class="col-md-3">
+            <select id="typeFilter" class="form-select">
+                <option value="">-- Loại xét nghiệm --</option>
+                <option value="Sinh hóa">Sinh hóa</option>
+                <option value="Huyết học">Huyết học</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select id="statusFilter" class="form-select">
+                <option value="">-- Trạng thái kết quả --</option>
+                <option value="Đang xử lý">Đang xử lý</option>
+                <option value="Hoàn tất">Hoàn tất</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 resizable border-end">
+            <h5>📋 Danh sách bệnh nhân</h5>
+            <div class="scrollable-table">
+                <table class="table table-bordered table-hover table-patients">
+                    <thead class="table-light">
+                        <tr>
+                            <th>SID</th>
+                            <th>Họ tên</th>
+                            <th>Loại</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientTable"></tbody>
+                </table>
+            </div>
+            <div class="pagination-container text-center">
+                <button class="btn btn-outline-primary btn-sm" id="prevPage">«</button>
+                <span id="pageInfo" class="mx-2"></span>
+                <button class="btn btn-outline-primary btn-sm" id="nextPage">»</button>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h5>🔬 Kết quả xét nghiệm</h5>
+            <div class="result-box" id="machineResult">
+                <p>Chọn bệnh nhân để xem kết quả.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts
+{
+    <script>
+        const aiComments = [
+          "Các chỉ số đều nằm trong giới hạn bình thường. Không có dấu hiệu bất thường.",
+          "Có dấu hiệu nhẹ của rối loạn chuyển hóa, cần theo dõi thêm.",
+          "Giá trị hemoglobin thấp, có thể là dấu hiệu của thiếu máu.",
+          "Nồng độ glucose cao hơn mức bình thường. Nên kiểm tra lại sau khi nhịn đói.",
+          "Tăng nhẹ ure, gợi ý chức năng thận có thể bị ảnh hưởng."
+        ];
+
+        const demoNames = [
+          "Nguyễn Văn A", "Trần Thị B", "Lê Văn C", "Phạm Thị D", "Hoàng Văn E",
+          "Vũ Thị F", "Đặng Văn G", "Bùi Thị H", "Ngô Văn I", "Dương Thị K",
+          "Lý Văn L", "Tạ Thị M", "Mai Văn N", "Trịnh Thị P", "Phan Văn Q",
+          "Cao Thị R", "Đỗ Văn S", "Hồ Thị T", "Đoàn Văn U", "Kiều Thị V"
+        ];
+
+        const patients = Array.from({length: 100}, (_, i) => {
+          const types = ["Sinh hóa", "Huyết học"];
+          const statuses = ["Đang xử lý", "Hoàn tất"];
+          const type = types[i % 2];
+          const status = statuses[i % 2];
+          const results = type === 'Sinh hóa'
+            ? [
+                { name: "Glucose", value: "5.5 mmol/L", interpret: "Bình thường" },
+                { name: "Ure", value: "3.2 mmol/L", interpret: "Thấp" },
+                { name: "Creatinine", value: "90 µmol/L", interpret: "Bình thường" }
+              ]
+            : [
+                { name: "WBC", value: "7.2 x10^9/L", interpret: "Bình thường" },
+                { name: "RBC", value: "4.5 x10^12/L", interpret: "Bình thường" },
+                { name: "HGB", value: "13.5 g/dL", interpret: "Thấp" }
+              ];
+          return {
+            sid: `SID${1000 + i}`,
+            name: demoNames[i % demoNames.length],
+            type: type,
+            status: status,
+            results: results,
+            ai: aiComments[i % aiComments.length]
+          };
+        });
+
+        let currentPage = 1;
+        const pageSize = 10;
+
+        function renderTable() {
+          const tableBody = document.getElementById("patientTable");
+          tableBody.innerHTML = "";
+          const sidSearch = document.getElementById("searchSID").value.toLowerCase();
+          const nameSearch = document.getElementById("searchName").value.toLowerCase();
+          const typeFilter = document.getElementById("typeFilter").value;
+          const statusFilter = document.getElementById("statusFilter").value;
+
+          const filtered = patients.filter(p =>
+            p.sid.toLowerCase().includes(sidSearch) &&
+            p.name.toLowerCase().includes(nameSearch) &&
+            (typeFilter === "" || p.type === typeFilter) &&
+            (statusFilter === "" || p.status === statusFilter)
+          );
+
+          const totalPages = Math.ceil(filtered.length / pageSize);
+          currentPage = Math.max(1, Math.min(currentPage, totalPages));
+
+          const start = (currentPage - 1) * pageSize;
+          const end = start + pageSize;
+          const pageData = filtered.slice(start, end);
+
+          pageData.forEach((p, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${p.sid}</td>
+              <td>${p.name}</td>
+              <td>${p.type}</td>
+              <td>${p.status}</td>
+            `;
+            row.onclick = () => {
+              document.querySelectorAll(".table-patients tbody tr").forEach(r => r.classList.remove("selected"));
+              row.classList.add("selected");
+              const resultTable = p.results.map(r => `<tr><td>${r.name}</td><td>${r.value}</td><td>${r.interpret}</td></tr>`).join("");
+              document.getElementById("machineResult").innerHTML = `
+                <div class="d-flex align-items-center mb-2">
+                  <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=${p.sid}" class="rounded-circle me-3" width="60" height="60">
+                  <div>
+                    <h6 class="mb-0">${p.name} (${p.sid})</h6>
+                    <small><strong>Loại:</strong> ${p.type} | <strong>Trạng thái:</strong> ${p.status}</small>
+                  </div>
+                </div>
+                <table class="table table-sm table-bordered table-results mt-3">
+                  <thead class="table-light"><tr><th>Chỉ số</th><th>Giá trị</th><th>Phân tích AI</th></tr></thead>
+                  <tbody>${resultTable}</tbody>
+                </table>
+                <div class="ai-box"><strong>🧠 AI Chẩn đoán:</strong> ${p.ai}</div>
+              `;
+            };
+            tableBody.appendChild(row);
+
+            if (index === 0) {
+              setTimeout(() => row.click(), 0);
+            }
+          });
+
+          document.getElementById("pageInfo").textContent = `Trang ${currentPage} / ${totalPages}`;
+          document.getElementById("prevPage").disabled = currentPage === 1;
+          document.getElementById("nextPage").disabled = currentPage === totalPages;
+        }
+
+        document.getElementById("searchSID").addEventListener("input", () => { currentPage = 1; renderTable(); });
+        document.getElementById("searchName").addEventListener("input", () => { currentPage = 1; renderTable(); });
+        document.getElementById("typeFilter").addEventListener("change", () => { currentPage = 1; renderTable(); });
+        document.getElementById("statusFilter").addEventListener("change", () => { currentPage = 1; renderTable(); });
+        document.getElementById("prevPage").addEventListener("click", () => { currentPage--; renderTable(); });
+        document.getElementById("nextPage").addEventListener("click", () => { currentPage++; renderTable(); });
+
+        renderTable();
+    </script>
+}

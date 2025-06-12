@@ -1,0 +1,173 @@
+﻿@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Phiếu Kết Quả Xét Nghiệm - Onelab";
+}
+
+<div class="text-end mb-3">
+    <button onclick="generatePDF()" class="btn btn-primary">📄 Xuất PDF</button>
+</div>
+
+<div id="report" class="container bg-white p-4 rounded shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="text-primary mb-0">PHIẾU KẾT QUẢ XÉT NGHIỆM</h4>
+            <small class="text-muted">Trung tâm xét nghiệm Onelab</small>
+        </div>
+        <img src="~/logo.png" style="width:200px" alt="Logo Onelab" class="img-fluid">
+    </div>
+
+    <div class="section-title">Thông tin bệnh nhân</div>
+    <div class="row mb-3">
+        <div class="col-md-4"><strong>Họ tên:</strong> Trần Thị C</div>
+        <div class="col-md-4"><strong>Giới tính:</strong> Nữ</div>
+        <div class="col-md-4"><strong>Ngày sinh:</strong> 15/03/1990</div>
+        <div class="col-md-4"><strong>Mã BN:</strong> BN000456</div>
+        <div class="col-md-4"><strong>Ngày lấy mẫu:</strong> 10/06/2025</div>
+        <div class="col-md-4"><strong>Ngày trả kết quả:</strong> 11/06/2025</div>
+    </div>
+
+    <div class="section-title">Kết quả xét nghiệm</div>
+    <div class="table-responsive mb-3">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Chỉ số</th>
+                    <th>Kết quả</th>
+                    <th>Đơn vị</th>
+                    <th>Giá trị bình thường</th>
+                    <th>Đánh giá AI</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Glucose (máu)</td>
+                    <td class="highlight-high">7.9</td>
+                    <td>mmol/L</td>
+                    <td>3.9 - 6.4</td>
+                    <td><span class="text-danger">Cao</span> - Rối loạn glucose</td>
+                </tr>
+                <tr>
+                    <td>Creatinine</td>
+                    <td>80</td>
+                    <td>µmol/L</td>
+                    <td>45 - 110</td>
+                    <td>Bình thường</td>
+                </tr>
+                <tr>
+                    <td>Ure</td>
+                    <td class="highlight-high">9.5</td>
+                    <td>mmol/L</td>
+                    <td>2.5 - 7.5</td>
+                    <td><span class="text-danger">Tăng</span> - Gợi ý suy thận nhẹ</td>
+                </tr>
+                <tr>
+                    <td>ALT (GPT)</td>
+                    <td class="highlight-high">65</td>
+                    <td>U/L</td>
+                    <td>7 - 56</td>
+                    <td><span class="text-warning">Tăng nhẹ</span> - Gợi ý gan nhiễm mỡ</td>
+                </tr>
+                <tr>
+                    <td>AST (GOT)</td>
+                    <td>40</td>
+                    <td>U/L</td>
+                    <td>10 - 40</td>
+                    <td>Bình thường</td>
+                </tr>
+                <tr>
+                    <td>Cholesterol toàn phần</td>
+                    <td class="highlight-high">6.2</td>
+                    <td>mmol/L</td>
+                    <td>< 5.2</td>
+                    <td><span class="text-danger">Cao</span> - Nguy cơ tim mạch</td>
+                </tr>
+                <tr>
+                    <td>Triglyceride</td>
+                    <td>1.5</td>
+                    <td>mmol/L</td>
+                    <td>< 1.7</td>
+                    <td>Bình thường</td>
+                </tr>
+                <tr>
+                    <td>HDL-C</td>
+                    <td class="highlight-low">0.8</td>
+                    <td>mmol/L</td>
+                    <td>> 1.0</td>
+                    <td><span class="text-warning">Thấp</span> - Tăng nguy cơ xơ vữa</td>
+                </tr>
+                <tr>
+                    <td>LDL-C</td>
+                    <td class="highlight-high">4.5</td>
+                    <td>mmol/L</td>
+                    <td>< 3.4</td>
+                    <td><span class="text-danger">Cao</span> - Cần điều chỉnh lipid</td>
+                </tr>
+                <tr>
+                    <td>Hemoglobin</td>
+                    <td>135</td>
+                    <td>g/L</td>
+                    <td>120 - 160</td>
+                    <td>Bình thường</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="section-title">Phân tích AI theo ICD-10</div>
+    <ul>
+        <li><strong>R73.9:</strong> Rối loạn glucose không xác định.</li>
+        <li><strong>N18.1:</strong> Bệnh thận mãn tính giai đoạn nhẹ.</li>
+        <li><strong>E78.0:</strong> Rối loạn chuyển hóa lipid.</li>
+        <li><strong>K76.0:</strong> Bệnh gan nhiễm mỡ không do rượu.</li>
+    </ul>
+
+    <div class="section-title">Gợi ý xét nghiệm bổ sung</div>
+    <ul>
+        <li><strong>HbA1c:</strong> Đánh giá kiểm soát đường huyết.</li>
+        <li><strong>eGFR:</strong> Tính mức lọc cầu thận.</li>
+        <li><strong>Siêu âm gan:</strong> Kiểm tra gan nhiễm mỡ.</li>
+        <li><strong>Lipid nâng cao:</strong> ApoA1, ApoB</li>
+    </ul>
+
+    <div class="section-title">Ghi chú chẩn đoán bác sĩ</div>
+    <div class="border p-3 mb-4">
+        Bệnh nhân có dấu hiệu rối loạn đường huyết và mỡ máu. Nên thay đổi chế độ ăn, tăng vận động, xét nghiệm lại sau 3 tháng.
+    </div>
+
+    <div class="section-title">Tra cứu hồ sơ bệnh án</div>
+    <div id="qrcode" class="mb-4"></div>
+    <small class="text-muted">Quét mã QR để truy cập hồ sơ trực tuyến.</small>
+
+    <div class="text-end mt-4">
+        <small>Ngày in: 11/06/2025</small><br>
+        <strong>Bác sĩ xét nghiệm</strong><br>
+        <em>TS.BS Nguyễn Văn B</em>
+    </div>
+    <div class="text-center mt-5">
+        <img src="~/images/verified.webp" alt="Đã xác thực" style="height: 80px;">
+        <div><small class="text-muted">Phiếu này được xác thực bởi hệ thống Onelab</small></div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <!-- QRCode + PDF script -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        new QRCode(document.getElementById("qrcode"), {
+          text: "https://lab.mifsoft.vn/lab",
+          width: 128, height: 128
+        });
+
+        function generatePDF() {
+          const element = document.getElementById('report');
+          html2pdf().set({
+            margin: 0.5,
+            filename: 'phieu_xet_nghiem_sample.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+          }).from(element).save();
+        }
+    </script>
+}

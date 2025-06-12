@@ -144,3 +144,121 @@ new Chart(document.getElementById('cosChart'), {
         }
     }
 });
+
+const trendCtx = document.getElementById('diseaseTrendChart').getContext('2d');
+new Chart(trendCtx, {
+    type: 'line',
+    data: {
+        labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5'],
+        datasets: [
+            {
+                label: 'Sốt xuất huyết',
+                data: [25, 45, 70, 120, 90],
+                borderColor: '#dc3545',
+                fill: false
+            },
+            {
+                label: 'Viêm gan B',
+                data: [15, 30, 40, 35, 50],
+                borderColor: '#0d6efd',
+                fill: false
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Xu hướng bệnh theo thời gian (LIS OneData)'
+            }
+        }
+    }
+});
+
+const regionCtx = document.getElementById('regionChart').getContext('2d');
+new Chart(regionCtx, {
+    type: 'bar',
+    data: {
+        labels: ['HCM', 'Hà Nội', 'Đà Nẵng', 'Cần Thơ'],
+        datasets: [
+            {
+                label: 'Sốt xuất huyết',
+                data: [120, 80, 60, 45],
+                backgroundColor: '#dc3545'
+            },
+            {
+                label: 'Viêm gan B',
+                data: [90, 110, 40, 30],
+                backgroundColor: '#0d6efd'
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Phân bố bệnh theo khu vực'
+            }
+        }
+    }
+});
+
+const ageGroupCtx = document.getElementById('ageGroupChart').getContext('2d');
+new Chart(ageGroupCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['0-12 tuổi', '13-25 tuổi', '26-45 tuổi', '46-65 tuổi', '65+'],
+        datasets: [{
+            label: 'Tỷ lệ bệnh nhân',
+            data: [10, 20, 35, 25, 10],
+            backgroundColor: ['#ffc107', '#0d6efd', '#28a745', '#6f42c1', '#dc3545']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Tỷ lệ bệnh theo nhóm tuổi'
+            }
+        }
+    }
+});
+
+const ctx = document.getElementById('glucoseChart').getContext('2d');
+const glucoseChart = new Chart(ctx, {
+    type: 'line', // đổi thành 'bar' nếu muốn
+    data: {
+        labels: ['01/06', '03/06', '05/06', '07/06', '09/06', '11/06'],
+        datasets: [{
+            label: 'Glucose (mg/dL)',
+            data: [105, 125, 140, 160, 180, 170],
+            borderColor: '#dc3545',
+            backgroundColor: 'rgba(220,53,69,0.2)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        aspectRatio: 2,
+        scales: {
+            y: {
+                suggestedMin: 50,
+                suggestedMax: 200,
+                title: { display: true, text: 'mg/dL' }
+            },
+            x: {
+                title: { display: true, text: 'Ngày' }
+            }
+        },
+        plugins: {
+            legend: { display: true },
+            tooltip: { mode: 'index', intersect: false }
+        }
+    }
+});
