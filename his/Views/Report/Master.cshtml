@@ -3,55 +3,89 @@
     ViewData["Title"] = "Theo dõi chỉ số bất thường";
 }
 
-<div class="container" id="dashboard">
-    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
-        <div>
-            <h3 class="fw-bold mb-3">Dashboard Xét nghiệm</h3>
-        </div>
-        <div class="ms-md-auto py-2 py-md-0">
-            <button class="btn btn-label-info btn-round me-2" onclick="exportToExcel()">Xuất báo báo</button>
-        </div>
+<!-- Breadcrumb -->
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Theo dõi chỉ số bất thường</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="/">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/dashboard">Dashboard</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/report/quality">Báo cáo sai số</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/lab/list">Danh sách xét nghiệm</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/lab">Phiếu xét nghiệm</a>
+        </li>
+    </ul>
+</div>
+
+<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+    <div>
+        <h3 class="fw-bold mb-3">Dashboard Xét nghiệm</h3>
     </div>
-
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="markerSelect" class="form-label">Chọn chỉ số:</label>
-            <select id="markerSelect" class="form-select" onchange="renderChart()">
-                <option value="Glucose" selected>Glucose</option>
-                <option value="Creatinine">Creatinine</option>
-                <option value="Ure">Ure</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label for="timeFilter" class="form-label">Lọc thời gian:</label>
-            <select id="timeFilter" class="form-select" onchange="renderChart()">
-                <option value="1">1 tháng</option>
-                <option value="3" selected>3 tháng</option>
-                <option value="6">6 tháng</option>
-            </select>
-        </div>
+    <div class="ms-md-auto py-2 py-md-0">
+        <button class="btn btn-label-info btn-round me-2" onclick="exportToExcel()">Xuất báo báo</button>
     </div>
+</div>
 
-    <!-- Chart -->
-    <canvas id="trendChart" height="100"></canvas>
-
-    <!-- AI Suggestion -->
-    <div id="aiSuggestion" class="mt-4 alert alert-warning d-none"></div>
-
-    <!-- Table -->
-    <div class="table-responsive mt-4">
-        <table class="table table-bordered table-sm" id="resultTable">
-            <thead class="table-light">
-                <tr>
-                    <th>Ngày</th>
-                    <th>Chỉ số</th>
-                    <th>Giá trị</th>
-                    <th>Xu hướng</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+<div class="row mb-3">
+    <div class="col-md-4">
+        <label for="markerSelect" class="form-label">Chọn chỉ số:</label>
+        <select id="markerSelect" class="form-select" onchange="renderChart()">
+            <option value="Glucose" selected>Glucose</option>
+            <option value="Creatinine">Creatinine</option>
+            <option value="Ure">Ure</option>
+        </select>
     </div>
+    <div class="col-md-4">
+        <label for="timeFilter" class="form-label">Lọc thời gian:</label>
+        <select id="timeFilter" class="form-select" onchange="renderChart()">
+            <option value="1">1 tháng</option>
+            <option value="3" selected>3 tháng</option>
+            <option value="6">6 tháng</option>
+        </select>
+    </div>
+</div>
+
+<!-- Chart -->
+<canvas id="trendChart" height="100"></canvas>
+
+<!-- AI Suggestion -->
+<div id="aiSuggestion" class="mt-4 alert alert-warning d-none"></div>
+
+<!-- Table -->
+<div class="table-responsive mt-4">
+    <table class="table table-bordered table-sm" id="resultTable">
+        <thead class="table-light">
+            <tr>
+                <th>Ngày</th>
+                <th>Chỉ số</th>
+                <th>Giá trị</th>
+                <th>Xu hướng</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </div>
 
 @section Scripts

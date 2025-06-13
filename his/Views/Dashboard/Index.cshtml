@@ -3,30 +3,53 @@
     ViewData["Title"] = "Tổng quan";
 }
 
-<div class="container py-4">
-    <h3 class="fw-bold mb-3">Tổng quan hoạt động</h3>
-    <!-- Cards -->
-    <div class="row row-card-no-pd">
-        <div class="col-sm-6 col-md-3">
-            <div class="card card-stats card-round">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-5">
-                            <div class="icon-big text-center">
-                                <i class="fas fa-flask text-primary"></i>
-                            </div>
+<!-- Breadcrumb -->
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Dashboard</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="/">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/lab/list">Danh sách xét nghiệm</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/lab">Phiếu xét nghiệm</a>
+        </li>
+    </ul>
+</div>
+
+<h3 class="fw-bold mb-3">Tổng quan hoạt động</h3>
+<!-- Cards -->
+<div class="row row-card-no-pd">
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-flask text-primary"></i>
                         </div>
-                        <div class="col-7 col-stats">
-                            <div class="numbers">
-                                <p class="card-category">Tổng số mẫu</p>
-                                <h4 class="card-title" id="totalSamples">0</h4>
-                            </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Tổng số mẫu</p>
+                            <h4 class="card-title" id="totalSamples">0</h4>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        @* <div class="col-sm-6 col-md-3">
+    </div>
+    @* <div class="col-sm-6 col-md-3">
             <div class="card card-stats card-round">
                 <div class="card-body">
                     <div class="row">
@@ -45,192 +68,191 @@
                 </div>
             </div>
         </div> *@
-        <div class="col-sm-6 col-md-3">
-            <div class="card card-stats card-round">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-5">
-                            <div class="icon-big text-center">
-                                <i class="fas fa-chart-line text-warning"></i>
-                            </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-chart-line text-warning"></i>
                         </div>
-                        <div class="col-7 col-stats">
-                            <div class="numbers">
-                                <p class="card-category">Tăng trưởng</p>
-                                <h4 class="card-title" id="growthRate">0%</h4>
-                            </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Tăng trưởng</p>
+                            <h4 class="card-title" id="growthRate">0%</h4>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-sm-6 col-md-3">
-            <div class="card card-stats card-round">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-5">
-                            <div class="icon-big text-center">
-                                <i class="icon-wallet text-success"></i>
-                            </div>
-                        </div>
-                        <div class="col-7 col-stats">
-                            <div class="numbers">
-                                <p class="card-category">Doanh thu</p>
-                                <h4 class="card-title" id="revenue">0 đ</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-3">
-            <div class="card card-stats card-round">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-5">
-                            <div class="icon-big text-center">
-                                <i class="fas fa-money-check text-danger"></i>
-                            </div>
-                        </div>
-                        <div class="col-7 col-stats">
-                            <div class="numbers">
-                                <p class="card-category">Chi phí</p>
-                                <h4 class="card-title" id="expenses">0 đ</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-       
     </div>
-
-    <!-- Charts -->
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card card-round">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Doanh thu theo tháng</div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="icon-wallet text-success"></i>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="barChart"></canvas>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Doanh thu</p>
+                            <h4 class="card-title" id="revenue">0 đ</h4>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card card-round">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Chi phí theo nhóm máy</div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-money-check text-danger"></i>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="cosChart"></canvas>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Chi phí</p>
+                            <h4 class="card-title" id="expenses">0 đ</h4>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card card-round">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Thời gian trung bình trả kết quả (TAT)</div>
-                    </div>
+</div>
+
+<!-- Charts -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Doanh thu theo tháng</div>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="tatChart"></canvas>
-                    </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card card-round">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Tỷ lệ loại xét nghiệm</div>
-                    </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Chi phí theo nhóm máy</div>
                 </div>
-                <div id="printArea" class="card-body">
-                    <div class="chart-container">
-                        <canvas id="donutChart"></canvas>
-                    </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="cosChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Thời gian trung bình trả kết quả (TAT)</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="tatChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Tỷ lệ loại xét nghiệm</div>
+                </div>
+            </div>
+            <div id="printArea" class="card-body">
+                <div class="chart-container">
+                    <canvas id="donutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Xu hướng bệnh theo thời gian</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="diseaseTrendChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card card-round">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Xu hướng bệnh theo thời gian</div>
-                    </div>
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Phân bố bệnh theo khu vực</div>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="diseaseTrendChart"></canvas>
-                    </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="regionChart"></canvas>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <div class="col-md-6">
-            <div class="card card-round">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Phân bố bệnh theo khu vực</div>
-                    </div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Tỷ lệ bệnh theo nhóm tuổi</div>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="regionChart"></canvas>
-                    </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="ageGroupChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Biểu đồ Glucose theo thời gian</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="glucoseChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-     <div class="row">
-        <div class="col-md-6">
-            <div class="card card-round">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Tỷ lệ bệnh theo nhóm tuổi</div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="ageGroupChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-         <div class="col-md-6">
-            <div class="card card-round">
-                <div class="card-header">
-                    <div class="card-head-row">
-                        <div class="card-title">Biểu đồ Glucose theo thời gian</div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="glucoseChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-    </div>
 </div>
 
 @section Scripts

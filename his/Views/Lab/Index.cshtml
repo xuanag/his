@@ -3,11 +3,34 @@
     ViewData["Title"] = "Phiếu Kết Quả Xét Nghiệm - Onelab";
 }
 
-<div class="text-end mb-3">
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Phiếu xét nghiệm</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="/">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/dashboard">Dashboard</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/lab/list">Danh sách xét nghiệm</a>
+        </li>
+    </ul>
+</div>
+
+<div class="text-end mb-2">
     <button onclick="generatePDF()" class="btn btn-primary">📄 Xuất PDF</button>
 </div>
 
-<div id="report" class="container bg-white p-4 rounded shadow-sm">
+<div id="report" class="bg-white p-4 rounded shadow-sm">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h4 class="text-primary mb-0">PHIẾU KẾT QUẢ XÉT NGHIỆM</h4>

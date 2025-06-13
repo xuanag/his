@@ -3,57 +3,91 @@
     ViewData["Title"] = "Báo cáo sai số | Onelab";
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
-        <div>
-            <h3 class="fw-bold mb-3">Báo cáo Sai số Xét nghiệm</h3>
-        </div>
-        <div class="ms-md-auto py-2 py-md-0">
-            <button class="btn btn-label-info btn-round me-2" onclick="exportExcel()">Xuất báo báo</button>
+<!-- Breadcrumb -->
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Báo cáo sai số</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="/">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/dashboard">Dashboard</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/report/master">Theo dõi chỉ số bất thường</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/lab/list">Danh sách xét nghiệm</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/lab">Phiếu xét nghiệm</a>
+        </li>
+    </ul>
+</div>
+
+<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+    <div>
+        <h3 class="fw-bold mb-3">Báo cáo Sai số Xét nghiệm</h3>
+    </div>
+    <div class="ms-md-auto py-2 py-md-0">
+        <button class="btn btn-label-info btn-round me-2" onclick="exportExcel()">Xuất báo báo</button>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <label for="timeFilter" class="form-label">Lọc theo thời gian</label>
+        <select id="timeFilter" class="form-select">
+            <option value="1">1 tháng gần nhất</option>
+            <option value="3">3 tháng</option>
+            <option value="6">6 tháng</option>
+        </select>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Sai số mẫu đầu/cuối -->
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6 class="fw-bold">Sai số mẫu đầu/cuối</h6>
+            <div class="chart-container">
+                <canvas id="sampleErrorChart"></canvas>
+            </div>
         </div>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <label for="timeFilter" class="form-label">Lọc theo thời gian</label>
-            <select id="timeFilter" class="form-select">
-                <option value="1">1 tháng gần nhất</option>
-                <option value="3">3 tháng</option>
-                <option value="6">6 tháng</option>
-            </select>
+    <!-- Sai số nhập liệu -->
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6 class="fw-bold">Sai số do nhập liệu</h6>
+            <div class="chart-container">
+                <canvas id="entryErrorChart"></canvas>
+            </div>
         </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Sai số mẫu đầu/cuối -->
-        <div class="col-md-6">
-            <div class="card p-3">
-                <h6 class="fw-bold">Sai số mẫu đầu/cuối</h6>
-                <div class="chart-container">
-                    <canvas id="sampleErrorChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sai số nhập liệu -->
-        <div class="col-md-6">
-            <div class="card p-3">
-                <h6 class="fw-bold">Sai số do nhập liệu</h6>
-                <div class="chart-container">
-                    <canvas id="entryErrorChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Phân tích AI -->
-        <div class="col-12">
-            <div class="card p-4 bg-light">
-                <h6 class="fw-bold">🧠 AI cảnh báo & Gợi ý theo ICD-10</h6>
-                <p>
-                    Cảnh báo: Tăng tỉ lệ sai số mẫu đầu/cuối (>15%) có thể liên quan đến quy trình bảo quản hoặc sai sót thao tác đầu/cuối tại phòng lấy mẫu. Đề nghị kiểm tra điều kiện bảo quản, quy trình lấy mẫu.<br>
-                    ICD-10 liên quan: R89.9 (Phát hiện bất thường không xác định trong mẫu), Z03.89 (Quan sát và đánh giá bệnh lý không xác định).
-                </p>
-            </div>
+    <!-- Phân tích AI -->
+    <div class="col-12">
+        <div class="card p-4 bg-light">
+            <h6 class="fw-bold">🧠 AI cảnh báo & Gợi ý theo ICD-10</h6>
+            <p>
+                Cảnh báo: Tăng tỉ lệ sai số mẫu đầu/cuối (>15%) có thể liên quan đến quy trình bảo quản hoặc sai sót thao tác đầu/cuối tại phòng lấy mẫu. Đề nghị kiểm tra điều kiện bảo quản, quy trình lấy mẫu.<br>
+                ICD-10 liên quan: R89.9 (Phát hiện bất thường không xác định trong mẫu), Z03.89 (Quan sát và đánh giá bệnh lý không xác định).
+            </p>
         </div>
     </div>
 </div>

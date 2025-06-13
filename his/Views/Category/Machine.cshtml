@@ -3,62 +3,85 @@
     ViewData["Title"] = "Quản lý máy xét nghiệm - Onelab";
 }
 
-<div class="container">
-    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
-        <div>
-            <h3 class="fw-bold mb-3">Quản lý máy xét nghiệm</h3>
-        </div>
-        <div class="ms-md-auto py-2 py-md-0">
-            <button class="btn btn-primary btn-round me-2" onclick="openModal()">➕ Thêm máy mới</button>
-            <button class="btn btn-info btn-round me-2" onclick="exportToExcel()">📥 Xuất Excel</button>
-        </div>
+<!-- Breadcrumb -->
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Quản lý máy xét nghiệm</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="/">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/dashboard">Dashboard</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/lab/list">Danh sách xét nghiệm</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="/lab">Phiếu xét nghiệm</a>
+        </li>
+    </ul>
+</div>
+
+<!-- Bộ lọc -->
+<div class="row gy-2 gy-md-0 align-items-end mb-3">
+    <div class="col-12 col-md-4">
+        <label for="filterType" class="form-label">Chọn loại máy:</label>
+        <select class="form-select" id="filterType" onchange="applyFilter()">
+            <option value="">-- Lọc theo loại máy --</option>
+            <option>Sinh hóa</option>
+            <option>Huyết học</option>
+            <option>Miễn dịch</option>
+            <option>Sinh học phân tử</option>
+            <option>Nước tiểu</option>
+        </select>
     </div>
 
-    <!-- Bộ lọc -->
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="filterType" class="form-label">Chọn loại máy:</label>
-            <select class="form-select" id="filterType" onchange="applyFilter()">
-                <option value="">-- Lọc theo loại máy --</option>
-                <option>Sinh hóa</option>
-                <option>Huyết học</option>
-                <option>Miễn dịch</option>
-                <option>Sinh học phân tử</option>
-                <option>Nước tiểu</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label for="filterStatus" class="form-label">Lọc trạng thái:</label>
-            <select class="form-select" id="filterStatus" onchange="applyFilter()">
-                <option value="">-- Lọc theo trạng thái --</option>
-                <option>Đang hoạt động</option>
-                <option>Đang bảo trì</option>
-                <option>Ngưng sử dụng</option>
-            </select>
-        </div>
+    <div class="col-12 col-md-4">
+        <label for="filterStatus" class="form-label">Lọc trạng thái:</label>
+        <select class="form-select" id="filterStatus" onchange="applyFilter()">
+            <option value="">-- Lọc theo trạng thái --</option>
+            <option>Đang hoạt động</option>
+            <option>Đang bảo trì</option>
+            <option>Ngưng sử dụng</option>
+        </select>
     </div>
 
-    <!-- Bảng danh sách -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover" id="machineTable">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Tên máy</th>
-                    <th>Loại</th>
-                    <th>Hãng</th>
-                    <th>Model</th>
-                    <th>Năm</th>
-                    <th>Trạng thái</th>
-                    <th>Ghi chú</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <!-- Dữ liệu sẽ được sinh tự động -->
-            </tbody>
-        </table>
+    <div class="col-12 col-md-4 d-flex flex-wrap justify-content-start justify-content-md-end gap-2 pt-2 pt-md-0">
+        <button class="btn btn-primary btn-round" onclick="openModal()">➕ Thêm máy mới</button>
+        <button class="btn btn-info btn-round" onclick="exportToExcel()">📥 Xuất Excel</button>
     </div>
+</div>
+<!-- Bảng danh sách -->
+<div class="table-responsive">
+    <table class="table table-bordered table-hover" id="machineTable">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Tên máy</th>
+                <th>Loại</th>
+                <th>Hãng</th>
+                <th>Model</th>
+                <th>Năm</th>
+                <th>Trạng thái</th>
+                <th>Ghi chú</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Dữ liệu sẽ được sinh tự động -->
+        </tbody>
+    </table>
 </div>
 
 <!-- Modal Thêm/Sửa -->
