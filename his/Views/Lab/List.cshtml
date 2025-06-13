@@ -10,11 +10,11 @@
             resize: horizontal;
             overflow: auto;
             min-width: 300px;
-            max-width: 600px;
+            /* max-width: 600px; */
         }
 
         .scrollable-table {
-            max-height: 500px;
+            max-height: 600px;
             overflow-y: auto;
         }
 
@@ -22,6 +22,17 @@
             word-wrap: break-word;
         }
 
+        .table th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+            .table-patients td.fullname {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 200px; /* Có thể điều chỉnh theo độ rộng table */
+            }
         .result-box {
             background: #f8f9fa;
             padding: 1rem;
@@ -80,7 +91,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6 resizable border-end">
+        <div class="col-md-7 resizable border-end">
             <h5>📋 Danh sách bệnh nhân</h5>
             <div class="scrollable-table">
                 <table class="table table-bordered table-hover table-patients">
@@ -88,6 +99,11 @@
                         <tr>
                             <th>SID</th>
                             <th>Họ tên</th>
+                            <th>Giới tính</th>
+                            <th>Ngày sinh</th>
+                            <th>Địa chỉ</th>
+                            <th>Điện thoại</th>
+                            <th>Ngày xét nghiệm</th>
                             <th>Loại</th>
                             <th>Trạng thái</th>
                         </tr>
@@ -101,7 +117,7 @@
                 <button class="btn btn-outline-primary btn-sm" id="nextPage">»</button>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-5">
             <h5>🔬 Kết quả xét nghiệm</h5>
             <div class="result-box" id="machineResult">
                 <p>Chọn bệnh nhân để xem kết quả.</p>
@@ -115,6 +131,71 @@
 @section Scripts
 {
     <script>
+        const icdCodes = [
+          {
+            code: "E11",
+            description: "Đái tháo đường týp 2 (Type 2 diabetes mellitus)",
+            suggestion: "Cần xét nghiệm HbA1c, đường huyết lúc đói và sau ăn.",
+            note: "Khuyến nghị điều chỉnh chế độ ăn và tập luyện, theo dõi đường huyết định kỳ."
+          },
+          {
+            code: "I10",
+            description: "Tăng huyết áp nguyên phát (Essential hypertension)",
+            suggestion: "Đo huyết áp liên tục trong 24 giờ, xét nghiệm điện giải đồ và creatinine.",
+            note: "Theo dõi huyết áp hàng ngày, loại trừ nguyên nhân thứ phát nếu cần."
+          },
+          {
+            code: "J45",
+            description: "Hen phế quản (Asthma)",
+            suggestion: "Chức năng hô hấp, đo FEV1/FVC, test dị ứng.",
+            note: "Cần loại bỏ yếu tố dị ứng, hướng dẫn bệnh nhân sử dụng thuốc giãn phế quản đúng cách."
+          },
+          {
+            code: "K21",
+            description: "Trào ngược dạ dày-thực quản (GERD)",
+            suggestion: "Nội soi dạ dày, xét nghiệm HP, theo dõi pH thực quản.",
+            note: "Khuyến nghị thay đổi lối sống, hạn chế thức ăn chua cay, kê đơn PPI nếu cần."
+          },
+          {
+            code: "M54",
+            description: "Đau lưng (Back pain)",
+            suggestion: "Chụp MRI cột sống thắt lưng, kiểm tra chức năng thần kinh.",
+            note: "Tư vấn vật lý trị liệu, hạn chế mang vác nặng, kiểm tra thoát vị đĩa đệm."
+          },
+          {
+            code: "N39",
+            description: "Rối loạn tiểu tiện (Urinary disorders)",
+            suggestion: "Tổng phân tích nước tiểu, siêu âm thận – bàng quang.",
+            note: "Theo dõi triệu chứng tiểu khó, tiểu nhiều lần, có thể liên quan viêm đường tiết niệu."
+          },
+          {
+            code: "R51",
+            description: "Đau đầu (Headache)",
+            suggestion: "CT scan sọ não, xét nghiệm công thức máu, MRI nếu đau kéo dài.",
+            note: "Cần phân biệt đau đầu nguyên phát và thứ phát, loại trừ dấu hiệu thần kinh khu trú."
+          },
+          {
+            code: "L20",
+            description: "Viêm da cơ địa (Atopic dermatitis)",
+            suggestion: "Test dị ứng, xét nghiệm IgE, khám da liễu chuyên sâu.",
+            note: "Hướng dẫn bệnh nhân chăm sóc da, sử dụng thuốc chống viêm không steroid."
+          }
+        ];
+        const additionalTests = [
+          "Tổng phân tích nước tiểu",
+          "CRP hs",
+          "HbA1c",
+          "Tổng phân tích tế bào máu",
+          "Xét nghiệm chức năng gan"
+        ];
+        const aiNotes = [
+          "Nên theo dõi chỉ số đường huyết định kỳ.",
+          "Đề nghị thực hiện thêm xét nghiệm viêm nhiễm.",
+          "Có dấu hiệu tăng huyết áp, nên kiểm tra ECG.",
+          "Cần đánh giá chức năng gan chuyên sâu.",
+          "Triệu chứng gợi ý viêm hô hấp nhẹ.",
+          "Khuyến nghị tái khám sau 7 ngày."
+        ];
         const aiComments = [
           "Các chỉ số đều nằm trong giới hạn bình thường. Không có dấu hiệu bất thường.",
           "Có dấu hiệu nhẹ của rối loạn chuyển hóa, cần theo dõi thêm.",
@@ -130,12 +211,29 @@
           "Cao Thị R", "Đỗ Văn S", "Hồ Thị T", "Đoàn Văn U", "Kiều Thị V"
         ];
 
+        const ho = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Vũ", "Đặng", "Bùi", "Đỗ", "Hồ"];
+        const dem = ["Văn", "Thị", "Hữu", "Minh", "Thanh", "Ngọc", "Xuân", "Thành", "Anh", "Quốc"];
+        const ten = ["An", "Bình", "Châu", "Dương", "Giang", "Hà", "Hải", "Hòa", "Hùng", "Khánh", "Lan", "Linh", "Long", "Mai", "Nam", "Nga", "Ngân", "Phong", "Phúc", "Quân", "Sơn", "Tâm", "Thảo", "Thành", "Trang", "Tuấn", "Việt", "Yến"];
+
+        function randomItem(arr) {
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+
         const patients = Array.from({length: 100}, (_, i) => {
-          const types = ["Sinh hóa", "Huyết học"];
-          const statuses = ["Đang xử lý", "Hoàn tất"];
-          const type = types[i % 2];
-          const status = statuses[i % 2];
-          const results = type === 'Sinh hóa'
+            const fullName = `${randomItem(ho)} ${randomItem(dem)} ${randomItem(ten)}`;
+            const year = 1950 + Math.floor(Math.random() * 50);
+            const gender = i % 2 === 0 ? "Nam" : "Nữ";
+            const address = `Số ${i + 1} Đường ABC, Quận ${i % 10 + 1}, TP.HCM`;
+            const phone = `09${Math.floor(100000000 + Math.random() * 899999999)}`;
+            const date = new Date();
+            date.setDate(date.getDate() - (i % 30));
+            const testDate = date.toISOString().split('T')[0];
+            const types = ["Sinh hóa", "Huyết học"];
+            const statuses = ["Đang xử lý", "Hoàn tất"];
+            const type = types[i % 2];
+            const status = statuses[i % 2];
+            const icd = icdCodes[i % icdCodes.length];
+            const results = type === 'Sinh hóa'
             ? [
                 { name: "Glucose", value: "5.5 mmol/L", interpret: "Bình thường" },
                 { name: "Ure", value: "3.2 mmol/L", interpret: "Thấp" },
@@ -147,12 +245,24 @@
                 { name: "HGB", value: "13.5 g/dL", interpret: "Thấp" }
               ];
           return {
-            sid: `SID${1000 + i}`,
-            name: demoNames[i % demoNames.length],
+            sid: `${1000 + i}`,
+            name: fullName,
+            gender: gender,
+            year: year,
+            address: address,
+            phone : phone,
+            testDate : testDate,
             type: type,
             status: status,
             results: results,
-            ai: aiComments[i % aiComments.length]
+            icd10: `<b>${icd.code}</b>: ${icd.description}`,
+            ai: aiComments[i % aiComments.length],
+            suggestedTest: icd.suggestion,
+            aiNote: icd.note
+            // ai: aiComments[i % aiComments.length],
+            // icd10: icdCodes[i % icdCodes.length],
+            // suggestedTest: additionalTests[i % additionalTests.length],
+            // aiNote: aiNotes[i % aiNotes.length]
           };
         });
 
@@ -184,10 +294,15 @@
           pageData.forEach((p, index) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-              <td>${p.sid}</td>
-              <td>${p.name}</td>
-              <td>${p.type}</td>
-              <td>${p.status}</td>
+                <td>${p.sid}</td>
+                <td class='fullname'>${p.name}</td>
+                <td>${p.gender}</td>
+                <td>${p.year}</td>
+                <td>${p.address}</td>
+                <td>${p.phone}</td>
+                <td>${p.testDate}</td>
+                <td>${p.type}</td>
+                <td>${p.status}</td>
             `;
             row.onclick = () => {
               document.querySelectorAll(".table-patients tbody tr").forEach(r => r.classList.remove("selected"));
@@ -205,7 +320,11 @@
                   <thead class="table-light"><tr><th>Chỉ số</th><th>Giá trị</th><th>Phân tích AI</th></tr></thead>
                   <tbody>${resultTable}</tbody>
                 </table>
-                <div class="ai-box"><strong>🧠 AI Chẩn đoán:</strong> ${p.ai}</div>
+                <div class="ai-box">
+                    <p><strong><i class="fas fa-notes-medical text-success me-2"></i> Phân tích AI theo ICD-10:</strong><br> ${p.icd10}</p>
+                    <p><strong><i class="fas fa-vials text-primary me-2"></i> Gợi ý xét nghiệm bổ sung:</strong> <br>${p.suggestedTest}</p>
+                    <p><strong>🧠 AI Chẩn đoán:</strong> <br>${p.ai}</p>
+                </div>
               `;
             };
             tableBody.appendChild(row);
