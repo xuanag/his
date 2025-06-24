@@ -53,7 +53,6 @@ builder.Services.AddScoped<IPhieuChiDinhService, PhieuChiDinhService>();
 builder.Services.AddScoped<IDocumentMappingService, DocumentMappingService>();
 #endregion
 
-
 #region JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

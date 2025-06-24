@@ -67,10 +67,6 @@
             border-radius: 0.5rem;
             font-size: 0.9rem;
         }
-
-        .page-header-x {
-            margin-bottom: 0px
-        }
     </style>
 }
 <div class="page-header">
@@ -515,9 +511,9 @@
                   <tbody>${resultTable}</tbody>
                 </table>
                 <div class="ai-box">
-                    <p><strong><i class="fas fa-notes-medical text-success me-2"></i> Phân tích AI theo ICD-10:</strong><br> ${p.icd10}</p>
+                    <p><strong><i class="fas fa-notes-medical text-success me-2"></i> Phân tích theo ICD-10:</strong><br> ${p.icd10}</p>
                     <p><strong><i class="fas fa-vials text-primary me-2"></i> Gợi ý xét nghiệm bổ sung:</strong> <br>${p.suggestedTest}</p>
-                    <p><strong>🧠 AI Chẩn đoán:</strong> <br>${p.ai}</p>
+                    <p><strong>Chẩn đoán:</strong> <br>${p.ai}</p>
                 </div>
               `;
             };
