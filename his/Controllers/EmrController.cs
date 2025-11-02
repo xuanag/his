@@ -30,30 +30,30 @@ public class EmrController : ControllerBase
         {
             return BadRequest("Mã bệnh nhân không được để trống");
         }
-        var patient = await _patientService.GetByNoAsync(request.patientNo);
+        //var patient = await _patientService.GetByNoAsync(request.patientNo);
 
         var benhNhan = new ThongTinBenhNhanResponse
         {
             buong = "P2",
-            cmnd_so = patient.IdCardNo,
-            dantoc = patient.Nation,
-            dantoc_ma = patient.NationCode,
+            cmnd_so = "079088018585",
+            dantoc = "Kinh",
+            dantoc_ma = "K",
             denngaybhyt = "23/10/2025",
-            diachi = patient.Address,
+            diachi = "122 HHL",
             diachinguoithan = "",
             doidangkybhyt = "75013",
             doituongbn_loai = "BHYT 4(80 %)",
-            gioitinh = patient.Gender,
+            gioitinh = "Nam",
             giuong = "P2_G10",
             hochieu_so = "",
-            hoten = patient.FullName,
+            hoten = "Nguyễn Văn A",
             hotennguoithan = Helpers.RandomFullName(),
-            khoa = patient.DepartmentName,
-            khoa_matat = patient.DepartmentCode,
+            khoa = "Test",
+            khoa_matat = "Test",
             lydotiepnhan = "Cấp cứu",
-            mabhyt = patient.IssuranceNo,
+            mabhyt = "01258585",
             mayte = "25018958",
-            ngaysinh = patient.DateOfBirth.ToString("yyyy/MM/dd"),
+            ngaysinh = "2025/12/12",
             nghenghiep = "Người quản lý công việc gia đình",
             nghenghiep_ma = "5152",
             ngoaikieu = "VN",
@@ -64,7 +64,7 @@ public class EmrController : ControllerBase
             noilamviec = "",
             quanhuyen = "Huyện Xuân Lộc",
             quanhuyen_ma = "Xuân Lộc",
-            sodienthoai = patient.Phone,
+            sodienthoai = "0938156368",
             sodienthoainguoithan = "",
             soluutru = "",
             sonha = "",
@@ -76,15 +76,15 @@ public class EmrController : ControllerBase
             tinhthanh = "Đồng Nai",
             tinhthanh_ma = "Đồng Nai",
             tungaybhyt = "24 / 10 / 2024",
-            tuoi = Helpers.CalAge(patient.DateOfBirth).ToString(),
+            tuoi = "21",
             xaphuong = "Thị trấn Gia Ray",
             yeutorh = ""
         };
 
-        if (benhNhan == null)
-        {
-            return NotFound("Không tìm thấy bệnh nhân");
-        }
+        //if (benhNhan == null)
+        //{
+        //    return NotFound("Không tìm thấy bệnh nhân");
+        //}
 
         return Ok(benhNhan);
     }
